@@ -8,7 +8,7 @@ using Rock.Plugin;
 
 namespace org.abwe.CommonRefData.Migrations
 {
-    [MigrationNumber(6, "1.6.0")]
+    [MigrationNumber(2, "1.6.0")]
     class Languages : Migration
     {
         public override void Up()

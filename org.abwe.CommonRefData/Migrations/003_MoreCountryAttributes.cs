@@ -8,7 +8,7 @@ using Rock.Plugin;
 
 namespace org.abwe.CommonRefData.Migrations
 {
-    [MigrationNumber(11, "1.6.0")]
+    [MigrationNumber(3, "1.6.0")]
     class MoreCountryAttributes : Migration
     {
         public override void Up()

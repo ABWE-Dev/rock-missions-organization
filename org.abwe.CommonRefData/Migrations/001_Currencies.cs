@@ -8,7 +8,7 @@ using Rock.Plugin;
 
 namespace org.abwe.CommonRefData.Migrations
 {
-    [MigrationNumber(5,"1.6.0")]
+    [MigrationNumber(1,"1.6.0")]
     class Currencies : Migration
     {
         public override void Up()

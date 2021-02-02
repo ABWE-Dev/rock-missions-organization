@@ -8,11 +8,12 @@ using Rock.Plugin;
 
 namespace org.abwe.CommonRefData.Migrations
 {
-    [MigrationNumber(2,"1.6.0")]
+    [MigrationNumber(5,"1.6.0")]
     class Currencies : Migration
     {
         public override void Up()
         {
+            System.Diagnostics.Debug.WriteLine("Executing Currencies Up Migration");
             RockMigrationHelper.AddDefinedType("Financial", "Currency", "World Currencies", org.abwe.CommonRefData.SystemGuid.DefinedType.CURRENCIES);
 
             RockMigrationHelper.AddDefinedValue(org.abwe.CommonRefData.SystemGuid.DefinedType.CURRENCIES, "AFA", "Afghanistan Afghani", Guid.NewGuid().ToString(), false);
@@ -24,6 +25,7 @@ namespace org.abwe.CommonRefData.Migrations
             RockMigrationHelper.AddDefinedValue(org.abwe.CommonRefData.SystemGuid.DefinedType.CURRENCIES, "AWG", "Aruban guilder", Guid.NewGuid().ToString(), false);
             RockMigrationHelper.AddDefinedValue(org.abwe.CommonRefData.SystemGuid.DefinedType.CURRENCIES, "AUD", "Australian dollar", Guid.NewGuid().ToString(), false);
             RockMigrationHelper.AddDefinedValue(org.abwe.CommonRefData.SystemGuid.DefinedType.CURRENCIES, "AZN", "Azerbaijanian new manat", Guid.NewGuid().ToString(), false);
+            RockMigrationHelper.AddDefinedValue(org.abwe.CommonRefData.SystemGuid.DefinedType.CURRENCIES, "BAM", "Bosnia-Herzegovina Convertible Mark", Guid.NewGuid().ToString(), false);
             RockMigrationHelper.AddDefinedValue(org.abwe.CommonRefData.SystemGuid.DefinedType.CURRENCIES, "BSD", "Bahamian dollar", Guid.NewGuid().ToString(), false);
             RockMigrationHelper.AddDefinedValue(org.abwe.CommonRefData.SystemGuid.DefinedType.CURRENCIES, "BHD", "Bahraini dinar", Guid.NewGuid().ToString(), false);
             RockMigrationHelper.AddDefinedValue(org.abwe.CommonRefData.SystemGuid.DefinedType.CURRENCIES, "BDT", "Bangladeshi taka", Guid.NewGuid().ToString(), false);
@@ -150,6 +152,7 @@ namespace org.abwe.CommonRefData.Migrations
             RockMigrationHelper.AddDefinedValue(org.abwe.CommonRefData.SystemGuid.DefinedType.CURRENCIES, "SOS", "Somali shilling", Guid.NewGuid().ToString(), false);
             RockMigrationHelper.AddDefinedValue(org.abwe.CommonRefData.SystemGuid.DefinedType.CURRENCIES, "ZAR", "South African rand", Guid.NewGuid().ToString(), false);
             RockMigrationHelper.AddDefinedValue(org.abwe.CommonRefData.SystemGuid.DefinedType.CURRENCIES, "KRW", "South Korean won", Guid.NewGuid().ToString(), false);
+            RockMigrationHelper.AddDefinedValue(org.abwe.CommonRefData.SystemGuid.DefinedType.CURRENCIES, "SSP", "South Sudanese pound", Guid.NewGuid().ToString(), false);
             RockMigrationHelper.AddDefinedValue(org.abwe.CommonRefData.SystemGuid.DefinedType.CURRENCIES, "LKR", "Sri Lanka rupee", Guid.NewGuid().ToString(), false);
             RockMigrationHelper.AddDefinedValue(org.abwe.CommonRefData.SystemGuid.DefinedType.CURRENCIES, "SDG", "Sudanese pound", Guid.NewGuid().ToString(), false);
             RockMigrationHelper.AddDefinedValue(org.abwe.CommonRefData.SystemGuid.DefinedType.CURRENCIES, "SRD", "Suriname dollar", Guid.NewGuid().ToString(), false);

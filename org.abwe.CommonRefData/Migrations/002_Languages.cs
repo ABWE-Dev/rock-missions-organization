@@ -8,15 +8,16 @@ using Rock.Plugin;
 
 namespace org.abwe.CommonRefData.Migrations
 {
-    [MigrationNumber(1, "1.6.0")]
+    [MigrationNumber(6, "1.6.0")]
     class Languages : Migration
     {
         public override void Up()
         {
+            System.Diagnostics.Debug.WriteLine("Executing Languages Up Migration");
             RockMigrationHelper.AddDefinedType("Communication", "Language", "World Languages", org.abwe.CommonRefData.SystemGuid.DefinedType.LANGUAGES);
 
             // value if alpha then ISO 639-1 code, if numeric then part of a macrolanguage like Mandarin in the Chinese family or 
-            // other non ISO recognized language which foc
+            // other non ISO 639-1 recognized language
             //
             RockMigrationHelper.AddDefinedValue(org.abwe.CommonRefData.SystemGuid.DefinedType.LANGUAGES, "AB", "ABKHAZIAN", Guid.NewGuid().ToString(), false);
             RockMigrationHelper.AddDefinedValue(org.abwe.CommonRefData.SystemGuid.DefinedType.LANGUAGES, "OM", "AFAN, OROMO", Guid.NewGuid().ToString(), false);

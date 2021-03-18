@@ -184,7 +184,6 @@ namespace RockWeb.Plugins.org_abwe.RockMissions.Churches
             {
                 rockContext.SaveChanges();
 
-                // TODO is the family group necessary?
                 // Add/Update Family Group
                 var familyGroupType = GroupTypeCache.GetFamilyGroupType();
                 int adultRoleId = familyGroupType.Roles
@@ -195,24 +194,16 @@ namespace RockWeb.Plugins.org_abwe.RockMissions.Churches
                 church.GivingGroup = adultFamilyMember.Group;
 
                 // Add/Update Church Group Type
-
-
-                // Add/Update Known Relationship Group Type
-                var knownRelationshipGroupType = GroupTypeCache.Get( Rock.SystemGuid.GroupType.GROUPTYPE_KNOWN_RELATIONSHIPS.AsGuid() );
-                int knownRelationshipOwnerRoleId = knownRelationshipGroupType.Roles
-                    .Where( r => r.Guid.Equals( Rock.SystemGuid.GroupRole.GROUPROLE_KNOWN_RELATIONSHIPS_OWNER.AsGuid() ) )
-                    .Select( r => r.Id )
-                    .FirstOrDefault();
-                var knownRelationshipOwner = UpdateGroupMember( church.Id, knownRelationshipGroupType, "Known Relationship", knownRelationshipOwnerRoleId, rockContext );
-
-                // Add/Update Implied Relationship Group Type
-                var impliedRelationshipGroupType = GroupTypeCache.Get( Rock.SystemGuid.GroupType.GROUPTYPE_PEER_NETWORK.AsGuid() );
-                int impliedRelationshipOwnerRoleId = impliedRelationshipGroupType.Roles
-                    .Where( r => r.Guid.Equals( Rock.SystemGuid.GroupRole.GROUPROLE_PEER_NETWORK_OWNER.AsGuid() ) )
-                    .Select( r => r.Id )
-                    .FirstOrDefault();
-                var impliedRelationshipOwner = UpdateGroupMember( church.Id, impliedRelationshipGroupType, "Implied Relationship", impliedRelationshipOwnerRoleId, rockContext );
-
+                var churchGroupType = GroupTypeCache.Get(org.abwe.RockMissions.Churches.SystemGuid.GroupType.GROUPTYPE_CHURCH.AsGuid() );
+                int churchGroupTypeRoleId = 0;
+                if (churchGroupType != null)
+                {
+                    churchGroupTypeRoleId = churchGroupType.Roles
+                        .Where(r => r.Guid == org.abwe.RockMissions.Churches.SystemGuid.GroupTypeRole.GROUPROLE_CHURCH.AsGuid())
+                        .Select(a => a.Id).FirstOrDefault();
+                }
+                var churchGroupKey = UpdateGroupMember(church.Id, churchGroupType, church.LastName, churchGroupTypeRoleId, rockContext);
+               
                 rockContext.SaveChanges();
 
                 // Location
@@ -224,8 +215,12 @@ namespace RockWeb.Plugins.org_abwe.RockMissions.Churches
                         gl.GroupId == adultFamilyMember.Group.Id &&
                         gl.GroupLocationTypeValueId == workLocationTypeId )
                     .FirstOrDefault();
+                if (string.IsNullOrWhiteSpace( acAddress.Street1 ))
+                {
+                    acAddress.Street1 = "unknown";
+                }
 
-                if ( string.IsNullOrWhiteSpace( acAddress.Street1 ) )
+                if ( string.IsNullOrWhiteSpace( acAddress.City ) )
                 {
                     if ( workLocation != null )
                     {
@@ -319,36 +314,10 @@ namespace RockWeb.Plugins.org_abwe.RockMissions.Churches
             int? churchId = hfChurchId.Value.AsIntegerOrNull();
             if ( churchId.HasValue )
             {
-                var churchContactId = e.RowKeyId;
-
                 var rockContext = new RockContext();
                 var groupMemberService = new GroupMemberService( rockContext );
-
-                Guid churchContact = Rock.SystemGuid.GroupRole.GROUPROLE_KNOWN_RELATIONSHIPS_BUSINESS_CONTACT.AsGuid();
-                Guid church = Rock.SystemGuid.GroupRole.GROUPROLE_KNOWN_RELATIONSHIPS_BUSINESS.AsGuid();
-                Guid ownerGuid = Rock.SystemGuid.GroupRole.GROUPROLE_KNOWN_RELATIONSHIPS_OWNER.AsGuid();
-                foreach ( var groupMember in groupMemberService.Queryable()
-                    .Where( m =>
-                        (
-                            // The contact person in the church's known relationships
-                            m.PersonId == churchContactId &&
-                            m.GroupRole.Guid.Equals( churchContact ) &&
-                            m.Group.Members.Any( o =>
-                                o.PersonId == churchId &&
-                                o.GroupRole.Guid.Equals( ownerGuid ) )
-                        ) ||
-                        (
-                            // The church in the person's know relationships
-                            m.PersonId == churchId &&
-                            m.GroupRole.Guid.Equals( church ) &&
-                            m.Group.Members.Any( o =>
-                                o.PersonId == churchContactId &&
-                                o.GroupRole.Guid.Equals( ownerGuid ) )
-                        )
-                        ) )
-                {
-                    groupMemberService.Delete( groupMember );
-                }
+                var churchGroupContact = groupMemberService.Get(e.RowKeyId);
+                groupMemberService.Delete( churchGroupContact );
 
                 rockContext.SaveChanges();
 
@@ -368,21 +337,60 @@ namespace RockWeb.Plugins.org_abwe.RockMissions.Churches
             var personService = new PersonService( rockContext );
             var groupService = new GroupService( rockContext );
             var groupMemberService = new GroupMemberService( rockContext );
-            var church = personService.Get( int.Parse( hfChurchId.Value ) );
+            var church = personService.Get(int.Parse(hfChurchId.Value));
             int? contactId = ppContact.PersonId;
-            
+            int roleId = ddlRole.SelectedValue.AsInteger();
+            var churchGroupType = GroupTypeCache.Get(org.abwe.RockMissions.Churches.SystemGuid.GroupType.GROUPTYPE_CHURCH.AsGuid());
+            var churchRole = churchGroupType.Roles.FirstOrDefault(r => r.Guid.Equals(org.abwe.RockMissions.Churches.SystemGuid.GroupTypeRole.GROUPROLE_CHURCH.AsGuid()));
+
             if ( contactId.HasValue && contactId.Value > 0 )
             {
-                // TODO figure out how to add a contact to a church
-                // personService.AddContactToChurch( church.Id, contactId.Value );
-                // rockContext.SaveChanges();
+                GroupMember churchGroupContact = groupMemberService.Queryable()
+                    .Where(m =>
+                        m.PersonId == contactId &&
+                        m.Group.Members.Any(o =>
+                           o.PersonId == church.Id &&
+                           o.GroupRole.Id == churchRole.Id)
+                        )
+                    .FirstOrDefault();
+                if ( churchGroupContact == null)
+                {
+                    churchGroupContact = new GroupMember();
+                    churchGroupContact.Group = groupService.Queryable()
+                        .Where(g => g.Members.Any(o =>
+                           o.PersonId == church.Id &&
+                           o.GroupRole.Id == churchRole.Id)
+                        )
+                        .FirstOrDefault();
+                }
+                churchGroupContact.PersonId = contactId.Value;
+                churchGroupContact.GroupRoleId = roleId;
+                churchGroupContact.GroupMemberStatus = GroupMemberStatus.Active;
+
+                if (churchGroupContact.Id == 0)
+                {
+                    groupMemberService.Add(churchGroupContact);
+                }
+                rockContext.SaveChanges();
             }
 
             mdAddContact.Hide();
             hfModalOpen.Value = string.Empty;
             BindContactListGrid( church );
         }
-
+        /// <summary>
+        /// Handles the Edit event of the gContactList control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="Rock.Web.UI.Controls.RowEventArgs"/> instance containing the event data.</param>
+        protected void gContactList_EditSelected(object sender, Rock.Web.UI.Controls.RowEventArgs e)
+        {
+            var groupMember = new GroupMemberService(new RockContext()).Get(e.RowKeyId);
+            ppContact.SetValue(groupMember.Person);
+            ddlRole.SetValue(groupMember.GroupRole);
+            hfModalOpen.Value = "Yes";
+            mdAddContact.Show();
+        }
         /// <summary>
         /// Handles the GridRebind event of the gContactList control.
         /// </summary>
@@ -450,6 +458,18 @@ namespace RockWeb.Plugins.org_abwe.RockMissions.Churches
                     ShowEditDetails( church );
                 }
             }
+
+            var churchGroupType = GroupTypeCache.Get(org.abwe.RockMissions.Churches.SystemGuid.GroupType.GROUPTYPE_CHURCH.AsGuid());
+            var roles = churchGroupType.Roles.OrderBy (a => a.Order).ToList();
+            var itemToRemove = roles.Single(r => r.Name == "Church"); 
+            if (itemToRemove != null)
+            {
+                roles.Remove(itemToRemove);
+            }
+
+            ddlRole.DataSource = roles;
+            
+            ddlRole.DataBind();
 
             BindContactListGrid( church );
         }
@@ -628,17 +648,49 @@ namespace RockWeb.Plugins.org_abwe.RockMissions.Churches
         /// <param name="church">The church.</param>
         private void BindContactListGrid( Person church )
         {
-            var personList = new GroupMemberService( new RockContext() ).Queryable()
-                .Where( g =>
-                    g.GroupRole.Guid.Equals( new Guid(org.abwe.RockMissions.Churches.SystemGuid.GroupTypeRole.GROUPROLE_CHURCH) ) &&
-                    g.PersonId == church.Id )
-                .SelectMany( g => g.Group.Members
-                    .Where( m => !m.GroupRole.Guid.Equals( new Guid(org.abwe.RockMissions.Churches.SystemGuid.GroupTypeRole.GROUPROLE_CHURCH) ) )
-                    .Select( m => m.Person ) )
-                .ToList();
+            if (church == null || church.Id == 0) return;
+            var churchGroupType = GroupTypeCache.Get(org.abwe.RockMissions.Churches.SystemGuid.GroupType.GROUPTYPE_CHURCH.AsGuid());
+            var churchRole = churchGroupType.Roles.FirstOrDefault(r => r.Guid.Equals(org.abwe.RockMissions.Churches.SystemGuid.GroupTypeRole.GROUPROLE_CHURCH.AsGuid()));
+            var churchGroup = new GroupService(new RockContext()).Queryable()
+                .Where(g => g.Members.Any(o =>
+                    o.PersonId == church.Id &&
+                    o.GroupRole.Id == churchRole.Id)
+                )
+                .FirstOrDefault();
+            if (churchGroup != null)
+            {
+                var memberList = churchGroup.Members.AsQueryable()
+                    .Where(m =>
+                        m.GroupRole.Id != churchRole.Id
+                    )
+                    .Select(a => new
+                    {
+                        Id = a.Id,
+                        Person = a.Person,
+                        GroupRole = a.GroupRole
+                    })
+                    .ToList();
 
-            gContactList.DataSource = personList;
-            gContactList.DataBind();
+
+                gContactList.DataSource = memberList;
+                gContactList.DataBind();
+            }
+        }
+
+        /// <summary>
+        /// Handles the DataBound event of the lContactInformation control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RowEventArgs"/> instance containing the event data.</param>
+        protected void lChurchContactRole_DataBound(object sender, RowEventArgs e)
+        {
+            Literal lChurchContactRole = e.Row.FindControl("lChurchContactRole") as Literal;
+            var person = e.Row.DataItem as Person;
+            if ( person != null)
+            {
+
+            }
+
         }
 
         /// <summary>

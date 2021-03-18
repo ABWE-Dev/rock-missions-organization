@@ -8,7 +8,7 @@
         <asp:Panel ID="pnlChurchList" CssClass="panel panel-block" runat="server">
 
             <div class="panel-heading">
-                <h1 class="panel-title"><i class="fa fa-briefcase"></i> Church List</h1>
+                <h1 class="panel-title"><i class="fa fa-church"></i> Church List</h1>
             </div>
             <div class="panel-body">
 
@@ -29,9 +29,12 @@
                         <Columns>
                             <Rock:SelectField></Rock:SelectField>
                             <Rock:RockBoundField DataField="ChurchName" HeaderText="Church Name" SortExpression="LastName" />
-                            <Rock:RockLiteralField SortExpression="State" HeaderText="State" ID="lState" OnDataBound="lState_DataBound" />
-                            <Rock:RockLiteralField SortExpression="PhoneNumber, Email" HeaderText="Contact Information" ID="lContactInformation" OnDataBound="lContactInformation_DataBound" />
-                            <Rock:RockLiteralField SortExpression="Address.City,Address.Street1" HeaderText="Address" ID="lAddress" OnDataBound="lAddress_DataBound" />
+                            <Rock:RockBoundField DataField="City" HeaderText="City" SortExpression="City" />
+                            <Rock:RockBoundField DataField="State" HeaderText="State" SortExpression="State" />
+                            <Rock:BadgeField HeaderText="Number Sent" DataField="SentMissionaryCount" SortExpression="SentMissionaryCount"
+                                InfoMin="0" InfoMax="0" SuccessMin="1" />
+                            <Rock:BadgeField HeaderText="Number Supported" DataField="SupportedMissionaryCount" SortExpression="SupportedMissionaryCount"
+                                InfoMin="0" InfoMax="0" SuccessMin="1" />
                         </Columns>
                     </Rock:Grid>
 

@@ -281,22 +281,24 @@ namespace RockWeb.Plugins.org_abwe.RockMissions.Churches
                         Id = b.Id,
                         LastName = b.LastName,
                         ChurchName = b.LastName,
-                        PhoneNumber = b.PhoneNumbers.FirstOrDefault().NumberFormatted,
-                        Email = b.Email,
-                        Address = b.GivingGroup.GroupLocations
-                                            .Where( gl => gl.GroupLocationTypeValueId == workLocationTypeId )
+                        City = b.GivingGroup.GroupLocations
+                                            .Where(gl => gl.GroupLocationTypeValueId == workLocationTypeId)
                                             .FirstOrDefault()
-                                            .Location,
-                        SentMissionaries = b.Members
+                                            .Location.City,
+                        State = b.GivingGroup.GroupLocations
+                                            .Where(gl => gl.GroupLocationTypeValueId == workLocationTypeId)
+                                            .FirstOrDefault()
+                                            .Location.State,
+                        SentMissionaryCount = b.Members
                                             .Where(m => m.Group.GroupTypeId == churchGroupTypeId)
                                             .SelectMany(m => m.Group.Members)
                                             .Where(p => p.GroupRoleId == sentMissionaryChurchGroupTypeRoleId && p.PersonId != b.Id)
-                                            .Select(p => p.Person.LastName + ", " + p.Person.NickName),
-                        SupportedMissionaries = b.Members
+                                            .Count(),
+                        SupportedMissionaryCount = b.Members
                                             .Where(m => m.Group.GroupTypeId == churchGroupTypeId)
                                             .SelectMany(m => m.Group.Members)
                                             .Where(p => p.GroupRoleId == supportedMissionaryChurchGroupTypeRoleId && p.PersonId != b.Id)
-                                            .Select(p => p.Person.LastName + ", " + p.Person.NickName),
+                                            .Count()
                     } );
 
                 SortProperty sortProperty = gChurchList.SortProperty;
@@ -332,68 +334,6 @@ namespace RockWeb.Plugins.org_abwe.RockMissions.Churches
 
         #endregion Internal Methods
 
-        /// <summary>
-        /// Handles the DataBound event of the lContactInformation control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RowEventArgs"/> instance containing the event data.</param>
-        protected void lContactInformation_DataBound(object sender, RowEventArgs e)
-        {
-            Literal lContactInformation = e.Row.FindControl("lContactInformation") as Literal;
-            ChurchSelectInfo churchSelectInfo = e.Row.DataItem as ChurchSelectInfo;
-            if (lContactInformation != null && churchSelectInfo != null)
-            {
-                lContactInformation.Text = FormatContactInfo(churchSelectInfo.PhoneNumber, churchSelectInfo.Email);
-            }
-        }
-
-        /// <summary>
-        /// Handles the DataBound event of the lAddress control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RowEventArgs"/> instance containing the event data.</param>
-        protected void lAddress_DataBound( object sender, RowEventArgs e )
-        {
-            Literal lAddress = e.Row.FindControl( "lAddress" ) as Literal;
-            ChurchSelectInfo churchSelectInfo = e.Row.DataItem as ChurchSelectInfo;
-            if ( lAddress != null && churchSelectInfo != null && churchSelectInfo.Address != null )
-            {
-                lAddress.Text = churchSelectInfo.Address.FormattedHtmlAddress;
-            }
-        }
-
-        /// <summary>
-        /// Handles the DataBound event of the lState control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RowEventArgs"/> instance containing the event data.</param>
-        protected void lState_DataBound(object sender, RowEventArgs e)
-        {
-            Literal lState = e.Row.FindControl("lState") as Literal;
-            ChurchSelectInfo churchSelectInfo = e.Row.DataItem as ChurchSelectInfo;
-            if (lState != null && churchSelectInfo != null && churchSelectInfo.Address != null)
-            {
-                lState.Text = churchSelectInfo.Address.State;
-            }
-        }
-
-        /// <summary>
-        /// Handles the DataBound event of the lContacts control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="RowEventArgs"/> instance containing the event data.</param>
-/*        protected void lContacts_DataBound( object sender, RowEventArgs e )
-        {
-            Literal lContacts = e.Row.FindControl( "lContacts" ) as Literal;
-            ChurchSelectInfo churchSelectInfo = e.Row.DataItem as ChurchSelectInfo;
-            if ( lContacts != null && churchSelectInfo != null )
-            {
-                lContacts.Text = churchSelectInfo.Contacts.ToList().AsDelimited( "<br />" );
-            }
-        }*/
-
-        /// <summary>
-        /// 
         /// </summary>
         /// <seealso cref="Rock.Utility.RockDynamic" />
         private class ChurchSelectInfo : RockDynamic
@@ -401,13 +341,11 @@ namespace RockWeb.Plugins.org_abwe.RockMissions.Churches
             public int Id { get; set; }
             public string LastName { get; set; }
             public string ChurchName { get; set; }
-            public string PhoneNumber { get; set; }
-            public string Email { get; set; }
-            public Location Address { get; set; }
+            public string City { get; set; }
             public string State { get; set; }
-            public IEnumerable<string> SentMissionaries { get; set; }
-            public IEnumerable<string> SupportedMissionaries { get; set; }
-            //public IEnumerable<string> Contacts { get; set; }
+            public int SentMissionaryCount { get; set; }
+            public int SupportedMissionaryCount { get; set; }
+
         }
     }
 }

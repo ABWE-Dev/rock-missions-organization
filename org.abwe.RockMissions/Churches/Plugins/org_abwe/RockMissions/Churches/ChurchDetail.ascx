@@ -6,7 +6,7 @@
 
             <div class="panel panel-block">
                 <div class="panel-heading">
-                    <h1 class="panel-title"><i class="fa fa-briefcase"></i>
+                    <h1 class="panel-title"><i class="fa fa-church"></i>
                         <asp:Literal ID="lTitle" runat="server" /></h1>
                     <div class="panel-labels">
                         <Rock:HighlightLabel ID="hlStatus" runat="server" />
@@ -23,13 +23,13 @@
                         <div class="row">
                             <div class="col-md-3">
                                 <fieldset>
-                                    <Rock:DefinedValuePicker ID="dvpRecordStatus" runat="server" Label="Record Status" AutoPostBack="true" OnSelectedIndexChanged="ddlRecordStatus_SelectedIndexChanged" />
+                                    <Rock:DefinedValuePicker ID="dvpRecordStatus" runat="server" Label="Record Status" AutoPostBack="true" OnSelectedIndexChanged="ddlRecordStatus_SelectedIndexChanged"/>
                                     <Rock:DefinedValuePicker ID="dvpReason" runat="server" Label="Reason" Visible="false"></Rock:DefinedValuePicker>
                                 </fieldset>
                             </div>
                             <div class="col-md-9">
 
-                                <Rock:DataTextBox ID="tbChurchName" runat="server" Label="Name" SourceTypeName="Rock.Model.Person, Rock" PropertyName="FirstName" />
+                                <Rock:DataTextBox ID="tbChurchName" runat="server" Label="Name" SourceTypeName="Rock.Model.Person, Rock" PropertyName="FirstName" Required="true"/>
 
                                 <Rock:AddressControl ID="acAddress" runat="server" UseStateAbbreviation="true" UseCountryAbbreviation="false" />
 
@@ -92,9 +92,11 @@
                 </div>
                 <div class="panel-body">
                     <div class="grid grid-panel">
-                        <Rock:Grid ID="gContactList" runat="server" RowItemText="Contact" EmptyDataText="No Contacts Found" AllowSorting="true" OnRowSelected="gContactList_RowSelected" ShowConfirmDeleteDialog="false">
+                        <Rock:Grid ID="gContactList" runat="server" RowItemText="Contact" EmptyDataText="No Contacts Found" AllowSorting="true" OnRowSelected="gContactList_RowSelected" ShowConfirmDeleteDialog="true" >
                             <Columns>
-                                <Rock:RockBoundField DataField="FullName" HeaderText="Contact Name" SortExpression="FullName" />
+                                <Rock:RockBoundField DataField="Person.FullName" HeaderText="Contact Name" SortExpression="Person.FullName" />
+                                <Rock:RockBoundField DataField="GroupRole.Name" HeaderText="Role" SortExpression="GroupRole.Name" />
+                                <Rock:EditField OnClick="gContactList_EditSelected" />
                                 <Rock:DeleteField OnClick="gContactList_Delete" />
                             </Columns>
                         </Rock:Grid>
@@ -108,6 +110,7 @@
                     <asp:HiddenField ID="hfModalOpen" runat="server" />
                     <asp:ValidationSummary ID="valSummaryAddContact" runat="server" HeaderText="Please correct the following:" CssClass="alert alert-validation" ValidationGroup="AddContact" />
                     <Rock:PersonPicker ID="ppContact" runat="server" Label="Contact" Required="true" ValidationGroup="AddContact" />
+                    <Rock:RockDropDownList ID="ddlRole" runat="server" Label="Role" DataTextField="Name" DataValueField="Id" Required="true" ValidationGroup="AddContact" />
                 </Content>
             </Rock:ModalDialog>
         </asp:Panel>

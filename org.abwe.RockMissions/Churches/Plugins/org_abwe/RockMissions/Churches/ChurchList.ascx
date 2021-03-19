@@ -33,7 +33,7 @@
                             <Rock:RockBoundField DataField="State" HeaderText="State" SortExpression="State" />
                             <Rock:BadgeField HeaderText="Number Sent" DataField="SentMissionaryCount" SortExpression="SentMissionaryCount"
                                 InfoMin="0" InfoMax="0" SuccessMin="1" />
-                            <Rock:BadgeField HeaderText="Number Supported" DataField="SupportedMissionaryCount" SortExpression="SupportedMissionaryCount"
+                            <Rock:BadgeField HeaderText="Number Supporting" DataField="SupportedMissionaryCount" SortExpression="SupportedMissionaryCount"
                                 InfoMin="0" InfoMax="0" SuccessMin="1" />
                         </Columns>
                     </Rock:Grid>

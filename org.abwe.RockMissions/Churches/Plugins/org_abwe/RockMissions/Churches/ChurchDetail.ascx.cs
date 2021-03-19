@@ -84,6 +84,11 @@ namespace RockWeb.Plugins.org_abwe.RockMissions.Churches
             {
                 mdAddContact.Show();
             }
+            if (!IsUserAuthorized(Authorization.EDIT))
+            {
+                lbEdit.Enabled = false;
+            }
+            
         }
 
         #endregion Control Methods

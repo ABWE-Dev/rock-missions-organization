@@ -6,15 +6,15 @@ using System.Threading.Tasks;
 
 using Rock.Plugin;
 
-namespace org.abwe.CommonRefData.Migrations
+namespace org.abwe.RockMissions.Migrations
 {
-    [MigrationNumber(2, "1.6.0")]
+    [MigrationNumber(2, "1.12.0")]
     class Languages : Migration
     {
         public override void Up()
         {
             System.Diagnostics.Debug.WriteLine("Executing Languages Up Migration");
-            RockMigrationHelper.AddDefinedType("Communication", "Language", "World Languages", org.abwe.CommonRefData.SystemGuid.DefinedType.LANGUAGES);
+            RockMigrationHelper.AddDefinedType("Communication", "Language", "World Languages", org.abwe.RockMissions.SystemGuid.DefinedType.LANGUAGES);
 
             // value if alpha then ISO 639-1 code, if numeric then part of a macrolanguage like Mandarin in the Chinese family or 
             // other non ISO 639-1 recognized language
@@ -362,7 +362,7 @@ namespace org.abwe.CommonRefData.Migrations
             RockMigrationHelper.DeleteDefinedValue("FEA1E42D-61A0-42C1-9C48-5ADFB50D65B5"); // EL
 
 
-            RockMigrationHelper.DeleteDefinedType(org.abwe.CommonRefData.SystemGuid.DefinedType.LANGUAGES);
+            RockMigrationHelper.DeleteDefinedType(org.abwe.RockMissions.SystemGuid.DefinedType.LANGUAGES);
         }
     }
 }

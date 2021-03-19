@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace org.abwe.RockMissions.Churches.SystemGuid
+namespace org.abwe.RockMissions.SystemGuid
 {
     public class GroupTypeRole
     {

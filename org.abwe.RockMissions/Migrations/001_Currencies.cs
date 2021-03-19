@@ -6,15 +6,15 @@ using System.Threading.Tasks;
 
 using Rock.Plugin;
 
-namespace org.abwe.CommonRefData.Migrations
+namespace org.abwe.RockMissions.Migrations
 {
-    [MigrationNumber(1,"1.6.0")]
+    [MigrationNumber(1,"1.12.0")]
     class Currencies : Migration
     {
         public override void Up()
         {
             System.Diagnostics.Debug.WriteLine("Executing Currencies Up Migration");
-            RockMigrationHelper.AddDefinedType("Financial", "Currency", "World Currencies", org.abwe.CommonRefData.SystemGuid.DefinedType.CURRENCIES);
+            RockMigrationHelper.AddDefinedType("Financial", "Currency", "World Currencies", org.abwe.RockMissions.SystemGuid.DefinedType.CURRENCIES);
 
             RockMigrationHelper.UpdateDefinedValue("7517A918-932D-440E-A1CA-E1D9A6706B26", "AED", "UAE dirham", "5EF1B8FE-D456-4520-855E-6880C3F0A7CB", false);
             RockMigrationHelper.UpdateDefinedValue("7517A918-932D-440E-A1CA-E1D9A6706B26", "AFA", "Afghanistan Afghani", "EFB68B4B-59E2-4F06-8651-E3D321A1121B", false);
@@ -349,7 +349,7 @@ namespace org.abwe.CommonRefData.Migrations
             RockMigrationHelper.DeleteDefinedValue("FE68FEAA-1658-4870-AC38-6D4184CB6BFF"); // EGP
             RockMigrationHelper.DeleteDefinedValue("FF13C9E1-251B-400F-B6F6-5C1EB60BA6C2"); // CRC
 
-            RockMigrationHelper.DeleteDefinedType(org.abwe.CommonRefData.SystemGuid.DefinedType.CURRENCIES);
+            RockMigrationHelper.DeleteDefinedType(org.abwe.RockMissions.SystemGuid.DefinedType.CURRENCIES);
 
         }
     }

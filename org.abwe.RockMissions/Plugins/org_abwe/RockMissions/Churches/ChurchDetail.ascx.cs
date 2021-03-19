@@ -32,7 +32,7 @@ using Rock.Web.Cache;
 using Rock.Web.UI;
 using Rock.Web.UI.Controls;
 
-namespace RockWeb.Plugins.org_abwe.RockMissions.Churches
+namespace RockWeb.Plugins.org_abwe.RockMissions
 {
     [DisplayName( "Church Detail" )]
     [Category( "org_abwe > RockMissions > Churches" )]
@@ -161,7 +161,7 @@ namespace RockWeb.Plugins.org_abwe.RockMissions.Churches
             }
 
             // Record Type - this is always "church". it will never change.
-            church.RecordTypeValueId = DefinedValueCache.Get(org.abwe.RockMissions.Churches.SystemGuid.DefinedValue.PERSON_RECORD_TYPE_CHURCH.AsGuid() ).Id;
+            church.RecordTypeValueId = DefinedValueCache.Get(org.abwe.RockMissions.SystemGuid.DefinedValue.PERSON_RECORD_TYPE_CHURCH.AsGuid() ).Id;
 
             // Record Status
             church.RecordStatusValueId = dvpRecordStatus.SelectedValueAsInt(); ;
@@ -199,12 +199,12 @@ namespace RockWeb.Plugins.org_abwe.RockMissions.Churches
                 church.GivingGroup = adultFamilyMember.Group;
 
                 // Add/Update Church Group Type
-                var churchGroupType = GroupTypeCache.Get(org.abwe.RockMissions.Churches.SystemGuid.GroupType.GROUPTYPE_CHURCH.AsGuid() );
+                var churchGroupType = GroupTypeCache.Get(org.abwe.RockMissions.SystemGuid.GroupType.GROUPTYPE_CHURCH.AsGuid() );
                 int churchGroupTypeRoleId = 0;
                 if (churchGroupType != null)
                 {
                     churchGroupTypeRoleId = churchGroupType.Roles
-                        .Where(r => r.Guid == org.abwe.RockMissions.Churches.SystemGuid.GroupTypeRole.GROUPROLE_CHURCH.AsGuid())
+                        .Where(r => r.Guid == org.abwe.RockMissions.SystemGuid.GroupTypeRole.GROUPROLE_CHURCH.AsGuid())
                         .Select(a => a.Id).FirstOrDefault();
                 }
                 var churchGroupKey = UpdateGroupMember(church.Id, churchGroupType, church.LastName, churchGroupTypeRoleId, rockContext);
@@ -345,8 +345,8 @@ namespace RockWeb.Plugins.org_abwe.RockMissions.Churches
             var church = personService.Get(int.Parse(hfChurchId.Value));
             int? contactId = ppContact.PersonId;
             int roleId = ddlRole.SelectedValue.AsInteger();
-            var churchGroupType = GroupTypeCache.Get(org.abwe.RockMissions.Churches.SystemGuid.GroupType.GROUPTYPE_CHURCH.AsGuid());
-            var churchRole = churchGroupType.Roles.FirstOrDefault(r => r.Guid.Equals(org.abwe.RockMissions.Churches.SystemGuid.GroupTypeRole.GROUPROLE_CHURCH.AsGuid()));
+            var churchGroupType = GroupTypeCache.Get(org.abwe.RockMissions.SystemGuid.GroupType.GROUPTYPE_CHURCH.AsGuid());
+            var churchRole = churchGroupType.Roles.FirstOrDefault(r => r.Guid.Equals(org.abwe.RockMissions.SystemGuid.GroupTypeRole.GROUPROLE_CHURCH.AsGuid()));
 
             if ( contactId.HasValue && contactId.Value > 0 )
             {
@@ -464,7 +464,7 @@ namespace RockWeb.Plugins.org_abwe.RockMissions.Churches
                 }
             }
 
-            var churchGroupType = GroupTypeCache.Get(org.abwe.RockMissions.Churches.SystemGuid.GroupType.GROUPTYPE_CHURCH.AsGuid());
+            var churchGroupType = GroupTypeCache.Get(org.abwe.RockMissions.SystemGuid.GroupType.GROUPTYPE_CHURCH.AsGuid());
             var roles = churchGroupType.Roles.OrderBy (a => a.Order).ToList();
             var itemToRemove = roles.Single(r => r.Name == "Church"); 
             if (itemToRemove != null)
@@ -654,8 +654,8 @@ namespace RockWeb.Plugins.org_abwe.RockMissions.Churches
         private void BindContactListGrid( Person church )
         {
             if (church == null || church.Id == 0) return;
-            var churchGroupType = GroupTypeCache.Get(org.abwe.RockMissions.Churches.SystemGuid.GroupType.GROUPTYPE_CHURCH.AsGuid());
-            var churchRole = churchGroupType.Roles.FirstOrDefault(r => r.Guid.Equals(org.abwe.RockMissions.Churches.SystemGuid.GroupTypeRole.GROUPROLE_CHURCH.AsGuid()));
+            var churchGroupType = GroupTypeCache.Get(org.abwe.RockMissions.SystemGuid.GroupType.GROUPTYPE_CHURCH.AsGuid());
+            var churchRole = churchGroupType.Roles.FirstOrDefault(r => r.Guid.Equals(org.abwe.RockMissions.SystemGuid.GroupTypeRole.GROUPROLE_CHURCH.AsGuid()));
             var churchGroup = new GroupService(new RockContext()).Queryable()
                 .Where(g => g.Members.Any(o =>
                     o.PersonId == church.Id &&

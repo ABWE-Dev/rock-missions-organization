@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 using Rock.Plugin;
 
-namespace org.abwe.CommonRefData.Migrations
+namespace org.abwe.RockMissions.Migrations
 {
-    [MigrationNumber(3, "1.6.0")]
+    [MigrationNumber(3, "1.12.0")]
     class MoreCountryAttributes : Migration
     {
         public override void Up()

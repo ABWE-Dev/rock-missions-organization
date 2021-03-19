@@ -30,7 +30,7 @@ using Rock.Web.Cache;
 using Rock.Web.UI;
 using Rock.Web.UI.Controls;
 
-namespace RockWeb.Plugins.org_abwe.RockMissions.Churches
+namespace RockWeb.Plugins.org_abwe.RockMissions
 {
     [DisplayName( "Church List" )]
     [Category( "org_abwe > RockMissions > Churches" )]
@@ -205,7 +205,7 @@ namespace RockWeb.Plugins.org_abwe.RockMissions.Churches
         private void BindGrid()
         {
             var rockContext = new RockContext();
-            var recordTypeValueId = DefinedValueCache.Get(org.abwe.RockMissions.Churches.SystemGuid.DefinedValue.PERSON_RECORD_TYPE_CHURCH.AsGuid() ).Id;
+            var recordTypeValueId = DefinedValueCache.Get(org.abwe.RockMissions.SystemGuid.DefinedValue.PERSON_RECORD_TYPE_CHURCH.AsGuid() ).Id;
 
             var churchQueryable = new PersonService( rockContext ).Queryable()
                 .Where( q => q.RecordTypeValueId == recordTypeValueId );
@@ -265,13 +265,13 @@ namespace RockWeb.Plugins.org_abwe.RockMissions.Churches
                 int sentMissionaryChurchGroupTypeRoleId = 0;
                 int supportedMissionaryChurchGroupTypeRoleId = 0;
 
-                var churchGroupType = GroupTypeCache.Get(org.abwe.RockMissions.Churches.SystemGuid.GroupType.GROUPTYPE_CHURCH.AsGuid());
+                var churchGroupType = GroupTypeCache.Get(org.abwe.RockMissions.SystemGuid.GroupType.GROUPTYPE_CHURCH.AsGuid());
 
                 if ( churchGroupType != null)
                 {
                     churchGroupTypeId = churchGroupType.Id;
-                    sentMissionaryChurchGroupTypeRoleId = churchGroupType.Roles.Where(r => r.Guid == org.abwe.RockMissions.Churches.SystemGuid.GroupTypeRole.GROUPROLE_SENT_MISSIONARY.AsGuid()).Select(a => a.Id).FirstOrDefault();
-                    supportedMissionaryChurchGroupTypeRoleId = churchGroupType.Roles.Where(r => r.Guid == org.abwe.RockMissions.Churches.SystemGuid.GroupTypeRole.GROUPROLE_SUPPORTED_MISSIONARY.AsGuid()).Select(a => a.Id).FirstOrDefault();
+                    sentMissionaryChurchGroupTypeRoleId = churchGroupType.Roles.Where(r => r.Guid == org.abwe.RockMissions.SystemGuid.GroupTypeRole.GROUPROLE_SENT_MISSIONARY.AsGuid()).Select(a => a.Id).FirstOrDefault();
+                    supportedMissionaryChurchGroupTypeRoleId = churchGroupType.Roles.Where(r => r.Guid == org.abwe.RockMissions.SystemGuid.GroupTypeRole.GROUPROLE_SUPPORTED_MISSIONARY.AsGuid()).Select(a => a.Id).FirstOrDefault();
                 }
 
 

@@ -77,7 +77,36 @@ namespace RockWeb.Plugins.org_abwe.RockMissions
 
             if ( !Page.IsPostBack )
             {
-                ShowDetail( PageParameter( "ChurchId" ).AsInteger() );
+                int ChurchId = PageParameter("ChurchId").AsInteger();
+                if (ChurchId == 0)
+                {
+                    int ChurchGroupId = PageParameter("GroupId").AsInteger();
+
+                    if (ChurchGroupId == 0)
+                    {
+                        nbWarningMessage.Text = "No church found.";
+                        return;
+                    }
+
+                    Guid ChurchRoleGuid = org.abwe.RockMissions.SystemGuid.GroupTypeRole.GROUPROLE_CHURCH.AsGuid();
+                    ChurchId = new GroupMemberService(new RockContext()).Queryable()
+                            .Where(gm => gm.GroupId == ChurchGroupId && gm.GroupRole.Guid == ChurchRoleGuid)
+                            .Select(gm => gm.PersonId)
+                            .FirstOrDefault();
+
+                    if (ChurchId == 0)
+                    {
+                        // TODO: Show an error if the group is not a church
+                        nbWarningMessage.Text = "This is not a church group";
+                        return;
+                    }
+
+                    var pageReference = RockPage.PageReference;
+                    pageReference.Parameters.AddOrReplace("ChurchId", ChurchId.ToString());
+                    pageReference.Parameters.Remove("GroupId");
+                    Response.Redirect(pageReference.BuildUrl(), false);
+                }
+                ShowDetail(ChurchId);
             }
 
             if ( !string.IsNullOrWhiteSpace( hfModalOpen.Value ) )
@@ -670,7 +699,7 @@ namespace RockWeb.Plugins.org_abwe.RockMissions
                     )
                     .Select(a => new
                     {
-                        Id = a.Id,
+                        Id = a.PersonId,
                         Person = a.Person,
                         GroupRole = a.GroupRole
                     })

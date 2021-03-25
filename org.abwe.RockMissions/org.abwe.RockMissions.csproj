@@ -69,7 +69,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Migrations\010_AccountAssociations.cs" />
     <Compile Include="Migrations\009_ChurchGroup.cs" />
+    <Compile Include="SystemGuid\Category.cs" />
     <Compile Include="SystemGuid\GroupType.cs" />
     <Compile Include="SystemGuid\GroupTypeRole.cs" />
     <Compile Include="Migrations\001_Currencies.cs" />

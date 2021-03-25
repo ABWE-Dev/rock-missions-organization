@@ -30,7 +30,6 @@ namespace org.abwe.RockMissions.Migrations
             RockMigrationHelper.UpdateGroupTypeRole("be7a89fa-4815-4258-a9c6-c08c058ee933", "Attendee", "", 7, null, null, "732edacb-c282-45cd-831f-eec7aa8be961", true, false, false);
             RockMigrationHelper.UpdateGroupTypeRole("be7a89fa-4815-4258-a9c6-c08c058ee933", "Church", "The person entity representing the church with the church record type", 8, null, null, "304598f2-fef0-44d3-ae10-5c5b1bfce29d", true, false, false);
 
- 
         }
 
         public override void Down()

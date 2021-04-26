@@ -56,6 +56,7 @@
       <HintPath>..\..\Rock\RockWeb\Bin\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
@@ -69,9 +70,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Migrations\011_AreaRegionFieldGroups.cs" />
+    <Compile Include="Migrations\013_StepWorkflows.cs" />
+    <Compile Include="Migrations\012_StepTypes.cs" />
     <Compile Include="Migrations\010_AccountAssociations.cs" />
     <Compile Include="Migrations\009_ChurchGroup.cs" />
+    <Compile Include="Reporting\DataTransform\SendingChurchTransform.cs" />
     <Compile Include="SystemGuid\Category.cs" />
+    <Compile Include="SystemGuid\StepType.cs" />
+    <Compile Include="SystemGuid\StepProgram.cs" />
     <Compile Include="SystemGuid\GroupType.cs" />
     <Compile Include="SystemGuid\GroupTypeRole.cs" />
     <Compile Include="Migrations\001_Currencies.cs" />

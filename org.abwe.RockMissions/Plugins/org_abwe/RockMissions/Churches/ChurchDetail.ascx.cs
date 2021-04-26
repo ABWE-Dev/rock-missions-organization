@@ -190,7 +190,7 @@ namespace RockWeb.Plugins.org_abwe.RockMissions
             }
 
             // Record Type - this is always "church". it will never change.
-            church.RecordTypeValueId = DefinedValueCache.Get(org.abwe.RockMissions.SystemGuid.DefinedValue.PERSON_RECORD_TYPE_CHURCH.AsGuid() ).Id;
+            church.RecordTypeValueId = DefinedValueCache.Get(Rock.SystemGuid.DefinedValue.PERSON_RECORD_TYPE_BUSINESS).Id;
 
             // Record Status
             church.RecordStatusValueId = dvpRecordStatus.SelectedValueAsInt(); ;
@@ -312,7 +312,8 @@ namespace RockWeb.Plugins.org_abwe.RockMissions
         protected void gContactList_RowSelected( object sender, Rock.Web.UI.Controls.RowEventArgs e )
         {
             var queryParams = new Dictionary<string, string>();
-            queryParams.Add( "PersonId", e.RowKeyId.ToString() );
+            var person = e.Row.DataItem as Person;
+            queryParams.Add( "PersonId", person.Id.ToString() );
             NavigateToLinkedPage( "PersonProfilePage", queryParams );
         }
 
@@ -699,7 +700,7 @@ namespace RockWeb.Plugins.org_abwe.RockMissions
                     )
                     .Select(a => new
                     {
-                        Id = a.PersonId,
+                        Id = a.Id,
                         Person = a.Person,
                         GroupRole = a.GroupRole
                     })

@@ -201,14 +201,16 @@ namespace RockWeb.Plugins.org_abwe.RockMissions
 
         /// <summary>
         /// Binds the grid.
-        /// </summary>
+        /// </summary>It s
         private void BindGrid()
         {
             var rockContext = new RockContext();
             var recordTypeValueId = DefinedValueCache.Get(org.abwe.RockMissions.SystemGuid.DefinedValue.PERSON_RECORD_TYPE_CHURCH.AsGuid() ).Id;
+            var churchGroupType = GroupTypeCache.Get(org.abwe.RockMissions.SystemGuid.GroupType.GROUPTYPE_CHURCH.AsGuid());
+            var churchRole = churchGroupType.Roles.FirstOrDefault(r => r.Guid.Equals(org.abwe.RockMissions.SystemGuid.GroupTypeRole.GROUPROLE_CHURCH.AsGuid()));
 
             var churchQueryable = new PersonService( rockContext ).Queryable()
-                .Where( q => q.RecordTypeValueId == recordTypeValueId );
+                .Where( q => q.Members.Any(m => m.GroupRoleId == churchRole.Id));
 
             var churchName = string.Empty;
             bool viaSearch = false;
@@ -264,8 +266,6 @@ namespace RockWeb.Plugins.org_abwe.RockMissions
                 int churchGroupTypeId = 0;
                 int sentMissionaryChurchGroupTypeRoleId = 0;
                 int supportedMissionaryChurchGroupTypeRoleId = 0;
-
-                var churchGroupType = GroupTypeCache.Get(org.abwe.RockMissions.SystemGuid.GroupType.GROUPTYPE_CHURCH.AsGuid());
 
                 if ( churchGroupType != null)
                 {

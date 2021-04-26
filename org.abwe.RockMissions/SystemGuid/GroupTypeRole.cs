@@ -18,5 +18,12 @@ namespace org.abwe.RockMissions.SystemGuid
         public const string GROUPROLE_MEMBER = "f000790b-fbee-428a-803d-1f879729ce98";
         public const string GROUPROLE_ATTENDEE = "732edacb-c282-45cd-831f-eec7aa8be961";
         public const string GROUPROLE_CHURCH = "304598f2-fef0-44d3-ae10-5c5b1bfce29d";
+
+        public const string GROUPROLE_MISSIONARY = "9DFEA6DD-DA09-434E-A7E3-9AD2E794793D";
+        public const string GROUPROLE_FIELDTEAM_LEADER = "A0FF98C1-F65F-4CDC-ADE5-BCA3B59DE4EB";
+        public const string GROUPROLE_VOLUNTEER = "65048DBC-5789-46D0-B16C-67400FF35B37";
+        public const string GROUPROLE_APPLICANT = "A85EA8FA-CD17-49A5-8882-413355F67F21";
+        public const string GROUPROLE_REGIONAL_LEADER = "721718D7-4044-4466-9E0B-387A50D4B6C3";
+        public const string GROUPROLE_AREA_LEADER = "43B23206-7546-467A-ABCF-E5173892269F";
     }
 }

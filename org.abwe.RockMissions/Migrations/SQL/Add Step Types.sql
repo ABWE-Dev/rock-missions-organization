@@ -1,5 +1,3 @@
-BEGIN TRANSACTION
-
 /**
 **  Rock Missions Step Types
 **/
@@ -113,6 +111,17 @@ INSERT INTO [dbo].[StepStatus]
                'Active'
                ,(SELECT Id FROM StepProgram WHERE [Guid] = '59c990ed-f5b4-4379-a926-852cba08fa03') -- Career
                ,0
+               ,''
+               ,1
+               ,0
+               ,GETDATE()
+               ,GETDATE()
+               ,NEWID()
+           ),
+		   (
+               'Concluded'
+               ,(SELECT Id FROM StepProgram WHERE [Guid] = '59c990ed-f5b4-4379-a926-852cba08fa03') -- Career
+               ,1
                ,''
                ,1
                ,0
@@ -453,12 +462,9 @@ VALUES
 (0,6,478,N'StepTypeId',(SELECT Id FROM StepType WHERE [Guid] = '2dabbcc8-19e6-4b59-aba2-a940cb876859'),N'Time',N'Time',N'',2,1,N'',0,1,'{d9bd8668-aa0f-47e0-b037-7ef6c01ddcfa}',GETDATE(),GETDATE(),NULL,N'',0,NULL,NULL,0,0,0,1,0,N'',N'',N'Time',0,0),
 (0,6,478,N'StepTypeId',(SELECT Id FROM StepType WHERE [Guid] = '2dabbcc8-19e6-4b59-aba2-a940cb876859'),N'FLSA',N'FLSA',N'',3,1,N'',0,1,'{46c4003c-9d57-4ff2-8c49-a2f3738e1999}',GETDATE(),GETDATE(),NULL,N'',0,NULL,NULL,0,0,0,1,0,N'',N'',N'FLSA',0,0),
 (0,3,478,N'StepTypeId',(SELECT Id FROM StepType WHERE [Guid] = '2dabbcc8-19e6-4b59-aba2-a940cb876859'),N'Minister',N'Minister',N'',4,1,N'False',0,0,'{40d78067-ce1e-4a02-b8d2-b065ecfcb03f}',GETDATE(),GETDATE(),NULL,N'',0,NULL,NULL,0,0,0,1,0,N'',N'',N'Minister',0,0),
-(0,6,478,N'StepTypeId',(SELECT Id FROM StepType WHERE [Guid] = 'ff3e7f7f-4127-4a95-8990-2eecf2cc7c03'),N'Field',N'Field',N'',0,1,N'',0,1,'{77019c0c-a06d-4e61-b216-850f9bc282dc}',GETDATE(),GETDATE(),NULL,N'',0,NULL,NULL,0,0,0,1,0,N'',N'',N'Field',0,0),
+(0,(SELECT Id FROM FieldType WHERE [Guid] = 'A0F1F865-68E1-49C3-A4A7-826808FF5E94'),478,N'StepTypeId',(SELECT Id FROM StepType WHERE [Guid] = 'ff3e7f7f-4127-4a95-8990-2eecf2cc7c03'),N'Details',N'Details',N'',0,1,N'',0,1,'{77019c0c-a06d-4e61-b216-850f9bc282dc}',GETDATE(),GETDATE(),NULL,N'',0,NULL,NULL,0,0,0,1,0,N'',N'',N'Details',0,0),
 (0,6,478,N'StepTypeId',(SELECT Id FROM StepType WHERE [Guid] = '7aae4cbb-9058-4beb-968b-4c0d9c92b4ef'),N'Length',N'Length',N'',0,1,N'',0,1,'{ecc0a6ce-a261-45a2-b801-408d57b8c3d2}',GETDATE(),GETDATE(),NULL,N'',0,NULL,NULL,0,0,0,1,0,N'',N'',N'Length',0,0),
 (0,3,478,N'StepTypeId',(SELECT Id FROM StepType WHERE [Guid] = '7aae4cbb-9058-4beb-968b-4c0d9c92b4ef'),N'Associate',N'Associate',N'',1,1,N'False',0,0,'{368827f0-f942-4c3e-90ac-3f6c10477e6c}',GETDATE(),GETDATE(),NULL,N'',0,NULL,NULL,0,0,0,1,0,N'',N'',N'Associate',0,0),
 (0,6,478,N'StepTypeId',(SELECT Id FROM StepType WHERE [Guid] = '7aae4cbb-9058-4beb-968b-4c0d9c92b4ef'),N'Commitment',N'Commitment',N'',2,1,N'',0,1,'{c2094694-7a88-4ce3-bb34-0b42c5906c86}',GETDATE(),GETDATE(),NULL,N'',0,NULL,NULL,0,0,0,1,0,N'',N'',N'Commitment',0,0),
 (0,11,478,N'StepTypeId',(SELECT Id FROM StepType WHERE [Guid] = 'ff3e7f7f-4127-4a95-8990-2eecf2cc7c03'),N'CEIMClearance',N'CEIM Clearance',N'',2,0,N'',0,0,'{c912fceb-766b-40a3-993e-3dd03c2a500a}',GETDATE(),GETDATE(),NULL,N'',0,NULL,NULL,0,0,0,1,0,N'',N'',N'CEIM Clearance',0,0),
-(0,11,478,N'StepTypeId',(SELECT Id FROM StepType WHERE [Guid] = 'ff3e7f7f-4127-4a95-8990-2eecf2cc7c03'),N'LeftforField',N'Left for Field',N'',1,1,N'',0,0,'{d4cce29b-0552-4b71-9dd8-1d226a9859e8}',GETDATE(),GETDATE(),NULL,N'',0,NULL,NULL,0,0,0,1,0,N'',N'',N'Left for Field',0,0),
-(0,43,478,N'StepTypeId',(SELECT Id FROM StepType WHERE [Guid] = 'ff3e7f7f-4127-4a95-8990-2eecf2cc7c03'),N'Role',N'Role',N'',3,1,N'',0,1,'{2e9f95bc-4a9f-46e7-aeb3-19e36c7465b2}',GETDATE(),GETDATE(),NULL,N'',0,NULL,NULL,0,0,0,1,0,N'',N'',N'Role',0,0)
-
-ROLLBACK TRANSACTION
+(0,11,478,N'StepTypeId',(SELECT Id FROM StepType WHERE [Guid] = 'ff3e7f7f-4127-4a95-8990-2eecf2cc7c03'),N'LeftforField',N'Left for Field',N'',1,1,N'',0,0,'{d4cce29b-0552-4b71-9dd8-1d226a9859e8}',GETDATE(),GETDATE(),NULL,N'',0,NULL,NULL,0,0,0,1,0,N'',N'',N'Left for Field',0,0)

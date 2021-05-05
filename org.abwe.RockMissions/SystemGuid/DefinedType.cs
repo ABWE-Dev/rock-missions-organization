@@ -29,5 +29,7 @@ namespace org.abwe.RockMissions.SystemGuid
         public const string PERSON_CONNECTION_STATUS_PARTNER = "B890E92E-0BC4-48D0-8F36-77EC62463932";
         public const string PERSON_CONNECTION_STATUS_STAFF = "30AE3FE6-C1A2-44D9-A35A-D24E610CF612";
         public const string PERSON_CONNECTION_STATUS_VOLUNTEER = "D6DBD004-3F27-4377-9552-2687CF2B114E";
+
+        public const string DEPARTMENTS = "a577b859-6c37-4150-bfd8-ffdb5eb2fc71";
     }
 }

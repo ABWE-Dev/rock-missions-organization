@@ -199,7 +199,7 @@
             function getStepTitle(step) {
                 switch (step.StepType.Guid) {
                     case 'ff3e7f7f-4127-4a95-8990-2eecf2cc7c03': // Field Assignment
-                        return `${step.AttributeValues["Field"].ValueFormatted} (${step.AttributeValues["Role"].ValueFormatted})`;
+                        return `${step.AttributeValues["Assignment"].ValueFormatted}`;
 
                     case '7aae4cbb-9058-4beb-968b-4c0d9c92b4ef': // Appointment
                         return `${step.AttributeValues["Commitment"].ValueFormatted} ${step.AttributeValues["Length"].ValueFormatted} ${step.AttributeValues["Associate"].Value == "True" ? "Associate" : ""}`;
@@ -211,7 +211,7 @@
 
             Sys.Application.add_load(function () {
 
-                var restUrl = '<%=ResolveUrl( "~/api/Steps?$expand=StepType%2C%20StepType%2FStepProgram&$orderby=StepType%2FStepProgram%2FOrder%2C%20StepType%2FOrder&loadAttributes=simple&$filter=" ) %>'
+                var restUrl = '<%=ResolveUrl( "~/api/Steps?$expand=StepType%2C%20StepType%2FStepProgram&$orderby=StepType%2FStepProgram%2FOrder%2C%20StepType%2FOrder%2C%20StartDateTime%20desc&loadAttributes=simple&$filter=" ) %>'
 
                 var filterParams = [];
                 var personAliasId = $('#<%=hfPersonId.ClientID%>').val();

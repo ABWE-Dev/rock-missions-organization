@@ -70,13 +70,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FieldType\ABWECampusGroupAndRoleFieldType.cs" />
     <Compile Include="Migrations\011_AreaRegionFieldGroups.cs" />
-    <Compile Include="Migrations\013_StepWorkflows.cs" />
-    <Compile Include="Migrations\012_StepTypes.cs" />
+    <Compile Include="Migrations\014_DepartmentsAndGroups - Copy.cs" />
+    <Compile Include="Migrations\015_EmploymentDepartmentAndSupervisor.cs" />
+    <Compile Include="Migrations\012_SecurityRoles.cs" />
+    <Compile Include="Migrations\014_StepWorkflows.cs" />
+    <Compile Include="Migrations\013_StepTypes.cs" />
     <Compile Include="Migrations\010_AccountAssociations.cs" />
     <Compile Include="Migrations\009_ChurchGroup.cs" />
     <Compile Include="Reporting\DataTransform\SendingChurchTransform.cs" />
+    <Compile Include="SystemGuid\Group.cs" />
     <Compile Include="SystemGuid\Category.cs" />
+    <Compile Include="SystemGuid\FieldType.cs" />
+    <Compile Include="SystemGuid\Page.cs" />
     <Compile Include="SystemGuid\StepType.cs" />
     <Compile Include="SystemGuid\StepProgram.cs" />
     <Compile Include="SystemGuid\GroupType.cs" />
@@ -95,6 +102,7 @@
     <Compile Include="SystemGuid\DefinedType.cs" />
     <Compile Include="SystemGuid\DefinedValue.cs" />
     <Compile Include="SystemGuid\FinancialAccounts.cs" />
+    <Compile Include="UI\Control\Picker\ABWECampusGroupAndRolePicker.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Model\" />

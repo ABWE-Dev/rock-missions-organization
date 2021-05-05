@@ -16,8 +16,7 @@ namespace org.abwe.RockMissions.Migrations
         {
             RockMigrationHelper.AddGroupType("Area", "A missions organization operational area", "Area", "Member", false, true, true, "", 0, null, 0, null, SystemGuid.GroupType.GROUPTYPE_AREA);
             RockMigrationHelper.AddGroupType("Region", "A missions organization operational region", "Region", "Member", false, true, true, "", 0, null, 0, null, SystemGuid.GroupType.GROUPTYPE_REGION);
-            RockMigrationHelper.AddGroupType("Field", "A missions organization operational field", "Field", "Member", false, true, true, "", 0, null, 0, null, SystemGuid.GroupType.GROUPTYPE_FIELD);
-            Sql($"UPDATE GroupType SET [GroupsRequireCampus] = 1 WHERE GroupType.[Guid] IN ('{SystemGuid.GroupType.GROUPTYPE_AREA},{SystemGuid.GroupType.GROUPTYPE_REGION},{SystemGuid.GroupType.GROUPTYPE_FIELD}')");
+            RockMigrationHelper.AddGroupType("Team", "A missions organization operational team", "Team", "Member", false, true, true, "", 0, null, 0, null, SystemGuid.GroupType.GROUPTYPE_TEAM);
 
             // Area Roles
             RockMigrationHelper.UpdateGroupTypeRole(SystemGuid.GroupType.GROUPTYPE_AREA, "Leader", "", 0, null, null, SystemGuid.GroupTypeRole.GROUPROLE_AREA_LEADER, true, true);
@@ -26,12 +25,12 @@ namespace org.abwe.RockMissions.Migrations
             RockMigrationHelper.UpdateGroupTypeRole(SystemGuid.GroupType.GROUPTYPE_REGION, "Leader", "", 0, null, null, SystemGuid.GroupTypeRole.GROUPROLE_REGIONAL_LEADER, true, true);
 
             // Field Roles
-            RockMigrationHelper.UpdateGroupTypeRole(SystemGuid.GroupType.GROUPTYPE_FIELD, "Leader", "", 0, null, null, SystemGuid.GroupTypeRole.GROUPROLE_FIELDTEAM_LEADER, true, true);
-            RockMigrationHelper.UpdateGroupTypeRole(SystemGuid.GroupType.GROUPTYPE_FIELD, "Missionary", "",0,null, null, SystemGuid.GroupTypeRole.GROUPROLE_MISSIONARY);
-            RockMigrationHelper.UpdateGroupTypeRole(SystemGuid.GroupType.GROUPTYPE_FIELD, "Volunteer", "", 0, null, null, SystemGuid.GroupTypeRole.GROUPROLE_VOLUNTEER);
-            RockMigrationHelper.UpdateGroupTypeRole(SystemGuid.GroupType.GROUPTYPE_FIELD, "Applicant", "", 0, null, null, SystemGuid.GroupTypeRole.GROUPROLE_APPLICANT);
+            RockMigrationHelper.UpdateGroupTypeRole(SystemGuid.GroupType.GROUPTYPE_TEAM, "Leader", "", 0, null, null, SystemGuid.GroupTypeRole.GROUPROLE_FIELDTEAM_LEADER, true, true);
+            RockMigrationHelper.UpdateGroupTypeRole(SystemGuid.GroupType.GROUPTYPE_TEAM, "Missionary", "",0,null, null, SystemGuid.GroupTypeRole.GROUPROLE_MISSIONARY);
+            RockMigrationHelper.UpdateGroupTypeRole(SystemGuid.GroupType.GROUPTYPE_TEAM, "Volunteer", "", 0, null, null, SystemGuid.GroupTypeRole.GROUPROLE_VOLUNTEER);
+            RockMigrationHelper.UpdateGroupTypeRole(SystemGuid.GroupType.GROUPTYPE_TEAM, "Applicant", "", 0, null, null, SystemGuid.GroupTypeRole.GROUPROLE_APPLICANT);
 
-            RockMigrationHelper.AddGroupTypeGroupAttribute(SystemGuid.GroupType.GROUPTYPE_FIELD, "59D5A94C-94A0-4630-B80A-BB25697D74C7", "Country", @"", 0, "", "B23BD07D-F132-447C-8146-A1A7827BEDC4", "Country");
+            RockMigrationHelper.AddGroupTypeGroupAttribute(SystemGuid.GroupType.GROUPTYPE_TEAM, "59D5A94C-94A0-4630-B80A-BB25697D74C7", "Country", @"", 0, "", "B23BD07D-F132-447C-8146-A1A7827BEDC4", "Country");
             // Qualifier for attribute: Country
             RockMigrationHelper.UpdateAttributeQualifier("B23BD07D-F132-447C-8146-A1A7827BEDC4", "definedtype", @"45", "FF3C9364-654A-45A2-8A7D-D9A96B97112E");
             // Qualifier for attribute: Country
@@ -47,7 +46,7 @@ namespace org.abwe.RockMissions.Migrations
             // Qualifier for attribute: Country
             RockMigrationHelper.UpdateAttributeQualifier("B23BD07D-F132-447C-8146-A1A7827BEDC4", "RepeatColumns", @"", "8C177FE2-7018-49A5-8A31-30661C25B6E1");
 
-
+            // Regions as children of Areas, Fields as children of Regions
             Sql(@"INSERT [GroupTypeAssociation]
 	            ([GroupTypeId], [ChildGroupTypeId])
               SELECT [GroupType].[Id], [ChildGroupType].Id

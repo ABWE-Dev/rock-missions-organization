@@ -6,17 +6,98 @@ using System.Threading.Tasks;
 using Rock;
 using Rock.Model;
 using Rock.Plugin;
+using Rock.Security;
 
 namespace org.abwe.RockMissions.Migrations
 {
-    [MigrationNumber(12, "1.12.0")]
+    [MigrationNumber(13, "1.12.0")]
     public class StepTypes : Migration
     {
+        private void AddStepSecurity(string entityTypeName, string entityTypeTableName, string entityGuid, int order, string action, bool allow, string groupGuid, Rock.Model.SpecialRole specialRoleType, string authGuid, string entityGuidField = "Guid")
+        {
+            if (string.IsNullOrWhiteSpace(groupGuid))
+            {
+                groupGuid = Guid.Empty.ToString();
+            }
+
+            int specialRole = specialRoleType.ConvertToInt();
+
+            char allowChar = allow ? 'A' : 'D';
+
+            string sql = $@"
+            DECLARE @groupId INT
+
+            SET @groupId = (
+		            SELECT [Id]
+		            FROM [Group]
+		            WHERE [Guid] = '{groupGuid}'
+		            )
+
+            DECLARE @entityTypeId INT
+
+            SET @entityTypeId = (
+		            SELECT [Id]
+		            FROM [EntityType]
+		            WHERE [name] = '{entityTypeName}'
+		            )
+
+            DECLARE @entityId INT
+
+            SET @entityId = (
+		            SELECT [Id]
+		            FROM [{entityTypeTableName}]
+		            WHERE [{entityGuidField}] = '{entityGuid}'
+		            )
+
+            IF (
+		            @entityId IS NOT NULL
+		            AND @entityId != 0
+		            )
+            BEGIN
+	            IF NOT EXISTS (
+			            SELECT [Id]
+			            FROM [Auth]
+			            WHERE [EntityTypeId] = @entityTypeId
+				            AND [EntityId] = @entityId
+				            AND [Action] = '{action}'
+				            AND [SpecialRole] = {specialRole}
+				            AND [GroupId] = @groupId
+			            )
+	            BEGIN
+		            INSERT INTO [dbo].[Auth] (
+			            [EntityTypeId]
+			            ,[EntityId]
+			            ,[Order]
+			            ,[Action]
+			            ,[AllowOrDeny]
+			            ,[SpecialRole]
+			            ,[GroupId]
+			            ,[Guid]
+			            )
+		            VALUES (
+			            @entityTypeId
+			            ,@entityId
+			            ,{order}
+			            ,'{action}'
+			            ,'{allowChar}'
+			            ,{specialRole}
+			            ,@groupId
+			            ,'{authGuid}'
+			            )
+	            END
+            END
+            ";
+            Sql(sql);
+        }
+
         public override void Up()
         {
-            RockMigrationHelper.AddDefinedType("", "Courses", "Missions Organization courses for personal development", "E811C31F-475E-42DE-B754-B6A63EC1ABBD", @"");
+            RockMigrationHelper.UpdateFieldType("Missions Org Group and Role", "Field Type to select a specific group and role", "org.abwe.RockMissions", "Rock.Field.Types.ABWECampusGroupAndRoleFieldType", SystemGuid.FieldType.FIELD_TYPE_CAMPUS_GROUP_ROLE, true);
+
+            RockMigrationHelper.AddDefinedType("Missions Orgs", "Courses", "Missions Organization courses for personal development", "E811C31F-475E-42DE-B754-B6A63EC1ABBD", @"");
             RockMigrationHelper.UpdateDefinedValue("E811C31F-475E-42DE-B754-B6A63EC1ABBD", "Good Soil", "", "3886578B-48EB-4607-9A0E-4BBE1ADCC880", false);
 
+            // Add Step Types and Attributes
             Sql(@"
 /**
 **  Rock Missions Step Types
@@ -131,6 +212,17 @@ INSERT INTO [dbo].[StepStatus]
                'Active'
                ,(SELECT Id FROM StepProgram WHERE [Guid] = '59c990ed-f5b4-4379-a926-852cba08fa03') -- Career
                ,0
+               ,''
+               ,1
+               ,0
+               ,GETDATE()
+               ,GETDATE()
+               ,NEWID()
+           ),
+		   (
+               'Concluded'
+               ,(SELECT Id FROM StepProgram WHERE [Guid] = '59c990ed-f5b4-4379-a926-852cba08fa03') -- Career
+               ,1
                ,''
                ,1
                ,0
@@ -283,7 +375,7 @@ INSERT [dbo].[StepType] (
         (SELECT Id FROM StepProgram WHERE [Guid] = '59c990ed-f5b4-4379-a926-852cba08fa03') -- Career
         ,'Field Assignment'
         ,''
-        ,'fa fa-map-marker-slash'
+        ,'fa fa-seedling'
         ,1
         ,1
         ,1
@@ -424,10 +516,10 @@ INSERT [dbo].[StepType] (
         ,'ffc1cc5b-fe73-4dbf-bc99-dcb22ded90c2'
         ,1
     ), (
-        (SELECT Id FROM StepProgram WHERE [Guid] = '38104628-dbcc-4719-bed5-966be9449d5a') -- Clearances
+        (SELECT Id FROM StepProgram WHERE [Guid] = 'acf26de6-f052-472a-8421-3293f99a3a9f') -- Clearances
         ,'Medical Clearance'
         ,''
-        ,''
+        ,'fa fa-stethoscope'
         ,1
         ,1
         ,1
@@ -443,7 +535,7 @@ INSERT [dbo].[StepType] (
         (SELECT Id FROM StepProgram WHERE [Guid] = 'acf26de6-f052-472a-8421-3293f99a3a9f') -- Clearances
         ,'Financial Clearance'
         ,''
-        ,''
+        ,'fa fa-search-dollar'
         ,1
         ,0
         ,1
@@ -468,25 +560,20 @@ VALUES
 (0,1,478,N'StepTypeId',(SELECT Id FROM StepType WHERE [Guid] = 'ffc1cc5b-fe73-4dbf-bc99-dcb22ded90c2'),N'Location',N'Location',N'',0,1,N'',0,1,'{fb7a01cd-d632-4226-ad9b-b5ee1cee412f}',GETDATE(),GETDATE(),NULL,N'',0,NULL,NULL,0,0,0,1,0,N'',N'',N'Location',0,0),
 (0,1,478,N'StepTypeId',(SELECT Id FROM StepType WHERE [Guid] = '2dabbcc8-19e6-4b59-aba2-a940cb876859'),N'JobTitle',N'Job Title',N'',0,1,N'',0,1,'{63350e79-db39-4ee9-a6f2-a4d8f73d3b44}',GETDATE(),GETDATE(),NULL,N'',0,NULL,NULL,0,0,0,1,0,N'',N'',N'Job Title',0,0),
 (0,67,478,N'StepTypeId',(SELECT Id FROM StepType WHERE [Guid] = '2dabbcc8-19e6-4b59-aba2-a940cb876859'),N'Department',N'Department',N'',1,1,N'aab2e9f4-e828-4fee-8467-73dc9dab784c|',0,1,'{034ea0ea-bcf5-4248-adf9-fc87cfd7dabf}',GETDATE(),GETDATE(),NULL,N'',0,NULL,NULL,0,0,0,1,0,N'',N'',N'Department',0,0),
-(0,6,478,N'StepTypeId',(SELECT Id FROM StepType WHERE [Guid] = '2dabbcc8-19e6-4b59-aba2-a940cb876859'),N'Time',N'Time',N'',2,1,N'',0,1,'{d9bd8668-aa0f-47e0-b037-7ef6c01ddcfa}',GETDATE(),GETDATE(),NULL,N'',0,NULL,NULL,0,0,0,1,0,N'',N'',N'Time',0,0),
+(0,6,478,N'StepTypeId',(SELECT Id FROM StepType WHERE [Guid] = '2dabbcc8-19e6-4b59-aba2-a940cb876859'),N'Commitment',N'Commitment',N'',2,1,N'',0,1,'{d9bd8668-aa0f-47e0-b037-7ef6c01ddcfa}',GETDATE(),GETDATE(),NULL,N'',0,NULL,NULL,0,0,0,1,0,N'',N'',N'Commitment',0,0),
 (0,6,478,N'StepTypeId',(SELECT Id FROM StepType WHERE [Guid] = '2dabbcc8-19e6-4b59-aba2-a940cb876859'),N'FLSA',N'FLSA',N'',3,1,N'',0,1,'{46c4003c-9d57-4ff2-8c49-a2f3738e1999}',GETDATE(),GETDATE(),NULL,N'',0,NULL,NULL,0,0,0,1,0,N'',N'',N'FLSA',0,0),
 (0,3,478,N'StepTypeId',(SELECT Id FROM StepType WHERE [Guid] = '2dabbcc8-19e6-4b59-aba2-a940cb876859'),N'Minister',N'Minister',N'',4,1,N'False',0,0,'{40d78067-ce1e-4a02-b8d2-b065ecfcb03f}',GETDATE(),GETDATE(),NULL,N'',0,NULL,NULL,0,0,0,1,0,N'',N'',N'Minister',0,0),
-(0,6,478,N'StepTypeId',(SELECT Id FROM StepType WHERE [Guid] = 'ff3e7f7f-4127-4a95-8990-2eecf2cc7c03'),N'Field',N'Field',N'',0,1,N'',0,1,'{77019c0c-a06d-4e61-b216-850f9bc282dc}',GETDATE(),GETDATE(),NULL,N'',0,NULL,NULL,0,0,0,1,0,N'',N'',N'Field',0,0),
+(0,(SELECT Id FROM FieldType WHERE [Guid] = 'A0F1F865-68E1-49C3-A4A7-826808FF5E94'),478,N'StepTypeId',(SELECT Id FROM StepType WHERE [Guid] = 'ff3e7f7f-4127-4a95-8990-2eecf2cc7c03'),N'Details',N'Details',N'',0,1,N'',0,1,'{77019c0c-a06d-4e61-b216-850f9bc282dc}',GETDATE(),GETDATE(),NULL,N'',0,NULL,NULL,0,0,0,1,0,N'',N'',N'Details',0,0),
 (0,6,478,N'StepTypeId',(SELECT Id FROM StepType WHERE [Guid] = '7aae4cbb-9058-4beb-968b-4c0d9c92b4ef'),N'Length',N'Length',N'',0,1,N'',0,1,'{ecc0a6ce-a261-45a2-b801-408d57b8c3d2}',GETDATE(),GETDATE(),NULL,N'',0,NULL,NULL,0,0,0,1,0,N'',N'',N'Length',0,0),
 (0,3,478,N'StepTypeId',(SELECT Id FROM StepType WHERE [Guid] = '7aae4cbb-9058-4beb-968b-4c0d9c92b4ef'),N'Associate',N'Associate',N'',1,1,N'False',0,0,'{368827f0-f942-4c3e-90ac-3f6c10477e6c}',GETDATE(),GETDATE(),NULL,N'',0,NULL,NULL,0,0,0,1,0,N'',N'',N'Associate',0,0),
 (0,6,478,N'StepTypeId',(SELECT Id FROM StepType WHERE [Guid] = '7aae4cbb-9058-4beb-968b-4c0d9c92b4ef'),N'Commitment',N'Commitment',N'',2,1,N'',0,1,'{c2094694-7a88-4ce3-bb34-0b42c5906c86}',GETDATE(),GETDATE(),NULL,N'',0,NULL,NULL,0,0,0,1,0,N'',N'',N'Commitment',0,0),
-(0,11,478,N'StepTypeId',(SELECT Id FROM StepType WHERE [Guid] = 'ff3e7f7f-4127-4a95-8990-2eecf2cc7c03'),N'CEIMClearance',N'CEIM Clearance',N'',2,0,N'',0,0,'{c912fceb-766b-40a3-993e-3dd03c2a500a}',GETDATE(),GETDATE(),NULL,N'',0,NULL,NULL,0,0,0,1,0,N'',N'',N'CEIM Clearance',0,0),
-(0,11,478,N'StepTypeId',(SELECT Id FROM StepType WHERE [Guid] = 'ff3e7f7f-4127-4a95-8990-2eecf2cc7c03'),N'LeftforField',N'Left for Field',N'',1,1,N'',0,0,'{d4cce29b-0552-4b71-9dd8-1d226a9859e8}',GETDATE(),GETDATE(),NULL,N'',0,NULL,NULL,0,0,0,1,0,N'',N'',N'Left for Field',0,0),
-(0,43,478,N'StepTypeId',(SELECT Id FROM StepType WHERE [Guid] = 'ff3e7f7f-4127-4a95-8990-2eecf2cc7c03'),N'Role',N'Role',N'',3,1,N'',0,1,'{2e9f95bc-4a9f-46e7-aeb3-19e36c7465b2}',GETDATE(),GETDATE(),NULL,N'',0,NULL,NULL,0,0,0,1,0,N'',N'',N'Role',0,0)
+(0,11,478,N'StepTypeId',(SELECT Id FROM StepType WHERE [Guid] = 'ff3e7f7f-4127-4a95-8990-2eecf2cc7c03'),N'EDClearance',N'ED Clearance',N'',2,0,N'',0,0,'{c912fceb-766b-40a3-993e-3dd03c2a500a}',GETDATE(),GETDATE(),NULL,N'',0,NULL,NULL,0,0,0,1,0,N'',N'',N'CEIM Clearance',0,0),
+(0,11,478,N'StepTypeId',(SELECT Id FROM StepType WHERE [Guid] = 'ff3e7f7f-4127-4a95-8990-2eecf2cc7c03'),N'LeftforField',N'Left for Field',N'',1,1,N'',0,0,'{d4cce29b-0552-4b71-9dd8-1d226a9859e8}',GETDATE(),GETDATE(),NULL,N'',0,NULL,NULL,0,0,0,1,0,N'',N'',N'Left for Field',0,0)
 ");
 
-            
-            // Qualifier for attribute: Field
-            RockMigrationHelper.UpdateAttributeQualifier("77019C0C-A06D-4E61-B216-850F9BC282DC", "values", $"SELECT [Guid] [Value], [Name] [Text] FROM [Group] WHERE GroupTypeId = {SqlScalar($"SELECT Id FROM GroupType WHERE [Guid] = '"+SystemGuid.GroupType.GROUPTYPE_FIELD+"'").ToString()}", "798FE221-2482-4B3F-9AC9-DDAF98B15533");
-            // Qualifier for attribute: Field
-            RockMigrationHelper.UpdateAttributeQualifier("77019C0C-A06D-4E61-B216-850F9BC282DC", "fieldtype", @"ddl_enhanced", "79BC77F9-E867-448C-8E18-F298A232AF5C");
-            // Qualifier for attribute: Field
-            RockMigrationHelper.UpdateAttributeQualifier("77019C0C-A06D-4E61-B216-850F9BC282DC", "repeatColumns", @"", "B6CA016D-846D-4FEA-8728-16759ED1DFD5");
+            // Qualifier for attribute: Assignment
+            RockMigrationHelper.UpdateAttributeQualifier("77019c0c-a06d-4e61-b216-850f9bc282dc", "groupAndRolePickerLabel", @"Group", "615B04C6-0C19-432F-8D40-04F29EBEB1E3");
+
             // Qualifier for attribute: Length
             RockMigrationHelper.UpdateAttributeQualifier("ECC0A6CE-A261-45A2-B801-408D57B8C3D2", "values", @"Short-Term,Mid-Term,Long-Term", "F462F5C8-0161-4A7C-8AB4-BD11D8378AB7");
             // Qualifier for attribute: Length
@@ -544,11 +631,11 @@ VALUES
             // Qualifier for attribute: Commitment
             RockMigrationHelper.UpdateAttributeQualifier("C2094694-7A88-4CE3-BB34-0B42C5906C86", "repeatColumns", @"", "FE4CCD6D-F7EC-4211-A392-712702786FC1");
 
-            // Qualifier for attribute: Time
+            // Qualifier for attribute: Commitment (Employment)
             RockMigrationHelper.UpdateAttributeQualifier("D9BD8668-AA0F-47E0-B037-7EF6C01DDCFA", "values", @"Full-Time,Part-Time", "04DCD057-7691-4928-9670-C585EC897FD0");
-            // Qualifier for attribute: Time
+            // Qualifier for attribute: Commitment (Employment)
             RockMigrationHelper.UpdateAttributeQualifier("D9BD8668-AA0F-47E0-B037-7EF6C01DDCFA", "fieldtype", @"ddl", "D04DB873-21F1-420E-B3C5-8CC552C5095E");
-            // Qualifier for attribute: Time
+            // Qualifier for attribute: Commitment (Employment)
             RockMigrationHelper.UpdateAttributeQualifier("D9BD8668-AA0F-47E0-B037-7EF6C01DDCFA", "repeatColumns", @"", "917E0BFF-AC9A-404B-8380-828E3F78F2B5");
             // Qualifier for attribute: FLSA
             RockMigrationHelper.UpdateAttributeQualifier("46C4003C-9D57-4FF2-8C49-A2F3738E1999", "values", @"Exempt-Administrative,Exempt-Computer,Exempt-Creative,Exempt-Executive,Exempt-Minister,Exempt-Professional,Non-Exempt", "02FF62D8-C79D-4E73-BA9B-EA3AA376820F");
@@ -586,14 +673,15 @@ VALUES
             RockMigrationHelper.UpdateAttributeQualifier("C912FCEB-766B-40A3-993E-3DD03C2A500A", "displayDiff", @"False", "CB526FCC-76F3-4774-BBFD-87DFD6D40CE0");
             // Qualifier for attribute: CEIMClearance
             RockMigrationHelper.UpdateAttributeQualifier("C912FCEB-766B-40A3-993E-3DD03C2A500A", "format", @"", "A0299751-A6D3-4856-A3E8-4EFD366A3D93");
-            // Qualifier for attribute: Role
-            RockMigrationHelper.UpdateAttributeQualifier("2E9F95BC-4A9F-46E7-AEB3-19E36C7465B2", "grouptype", SqlScalar($"SELECT Id FROM GroupType WHERE [Guid] = '" + SystemGuid.GroupType.GROUPTYPE_FIELD + "'").ToString(), "913DE1AE-D264-4639-A38C-34135B397929");
-
 
             // Add Page Timelines to Site:Rock RMS
-            RockMigrationHelper.AddPage(true, "BF04BB7E-BE3A-4A38-A37C-386B55496303", "F66758C6-3E3D-4598-AF4C-B317047B5987", "Timelines", "", "18E2C178-DD5D-4031-960A-71994057FDE4", "");
+            RockMigrationHelper.AddPage(true, "BF04BB7E-BE3A-4A38-A37C-386B55496303", "F66758C6-3E3D-4598-AF4C-B317047B5987", "Timelines", "", "18E2C178-DD5D-4031-960A-71994057FDE4", "", "53CF4CBE-85F9-4A50-87D7-0D72A3FB2892");
+            // Add Page Timeline Entry to Site:Rock RMS
+            RockMigrationHelper.AddPage(true, "18E2C178-DD5D-4031-960A-71994057FDE4", Rock.SystemGuid.Layout.FULL_WIDTH_INTERNAL_SITE, "Timeline Entry", "", "6A4F75A3-95D1-43D5-AAF7-93CEC040F346");
             // Add Page Route for Timelines
             RockMigrationHelper.AddPageRoute("18E2C178-DD5D-4031-960A-71994057FDE4", "Person/{PersonId}/Timelines", "2EDD7D32-1557-43A8-98D9-CF9E3A4A758D");
+            // Add Page Route for Timeline Entry
+            RockMigrationHelper.AddPageRoute("6A4F75A3-95D1-43D5-AAF7-93CEC040F346", "Person/{PersonId}/Timelines/Add", "30F0FE0F-831A-4CB2-8B19-0476D5A6D110");
             // Add/Update BlockType Steps Timeline
             RockMigrationHelper.UpdateBlockType("Steps Timeline", "Displays a timeline of a person's steps", "~/Plugins/org_abwe/RockMissions/Churches/StepsTimeline.ascx", "org_abwe > Rock Missions > Steps Timeline", "46A95A66-8FAC-4327-837D-EE846A424982");
             // Add Block Steps Timeline to Page: Timelines, Site: Rock RMS
@@ -614,6 +702,28 @@ VALUES
             RockMigrationHelper.AddBlockAttributeValue("8995F48B-CEA0-439C-924C-ADF96ACC93CC", "5644C455-2029-4B3A-ABA3-F2A0F0866D5B",
                 SqlScalar($"SELECT STRING_AGG(Id,',') FROM StepType WHERE [Guid] IN ('{StepTypeGuids.JoinStrings("','")}')").ToString()
             );
+            // Add Block Attribute Value: Step Entry Page
+            RockMigrationHelper.AddBlockAttributeValue("8995F48B-CEA0-439C-924C-ADF96ACC93CC", "5D341011-9CC5-46A5-9ED9-998FE874B743", "6A4F75A3-95D1-43D5-AAF7-93CEC040F346");
+            // Delete default step program
+            Sql("DELETE FROM StepProgram WHERE Id = 1");
+
+            // Change default Steps page Steps block Step Program
+            RockMigrationHelper.UpdateBlockAttributeValue("46E5C15A-44A5-4FB3-8CE8-572FB0D85367", "B4E07CC9-53E0-47CF-AC22-10F2085547A3", SystemGuid.StepProgram.STEP_PROGRAM_PERSONAL_DEVELOPMENT);
+
+            // Add Block Step Entry to Page: Step Entry, Site: Rock RMS
+            RockMigrationHelper.AddBlock(true, "6A4F75A3-95D1-43D5-AAF7-93CEC040F346".AsGuid(), null, "C2D29296-6A87-47A9-A753-EE4E9159C4C4".AsGuid(), "8D78BC55-6E67-40AB-B453-994D69503838".AsGuid(), "Timeline Entry", "Main", @"<style>
+                    .campus-picker { 
+                        display: none;
+                    }
+                </style>", @"", 0, "985EBD06-AD2E-4FF5-8B1C-64C30710F91C");
+            // Add Block Attribute Value
+            //   Block: Step Entry
+            //   BlockType: Step Entry
+            //   Block Location: Page=Step Entry, Site=Rock RMS
+            //   Attribute: Success Page
+            //   Attribute Value: 18e2c178-dd5d-4031-960a-71994057fde4
+            RockMigrationHelper.AddBlockAttributeValue("985EBD06-AD2E-4FF5-8B1C-64C30710F91C", "1BC93D94-6AB0-438B-B2EB-F3A3681DABEB", @"18e2c178-dd5d-4031-960a-71994057fde4");
+
 
             // Add Block Attribute Value
             //   Block: Steps Timeline
@@ -624,6 +734,76 @@ VALUES
             RockMigrationHelper.AddBlockAttributeValue("8995F48B-CEA0-439C-924C-ADF96ACC93CC", "5D341011-9CC5-46A5-9ED9-998FE874B743", @"7a04966a-8e4e-49ea-a03c-7dd4b52a7b28");
 
 
+            /** Security Roles for Step Types **/
+
+            // Appointments
+            AddStepSecurity("Rock.Model.StepType", "StepType", SystemGuid.StepType.STEP_TYPE_CAREER_APPOINTMENT, 0, Authorization.EDIT, true, SystemGuid.Group.GROUP_HR, 0, "16f83431-49a6-44ff-9c82-adc8f130028e");
+            AddStepSecurity("Rock.Model.StepType", "StepType", SystemGuid.StepType.STEP_TYPE_CAREER_APPOINTMENT, 1, Authorization.EDIT, true, SystemGuid.Group.GROUP_MISSIONARY_WORKER, 0, "a633c2ab-9334-416f-adbf-458e8812bed1");
+            AddStepSecurity("Rock.Model.StepType", "StepType", SystemGuid.StepType.STEP_TYPE_CAREER_APPOINTMENT, 2, Authorization.EDIT, true, Rock.SystemGuid.Group.GROUP_ADMINISTRATORS, 0, "b530a09d-8440-4084-ba26-c00ebfc02f51");
+            AddStepSecurity("Rock.Model.StepType", "StepType", SystemGuid.StepType.STEP_TYPE_CAREER_APPOINTMENT, 3, Authorization.EDIT, false, null, SpecialRole.AllUsers, "54552928-c2b7-4e2f-ac99-9502df7b7c88");
+
+            // Assignments
+            AddStepSecurity("Rock.Model.StepType", "StepType", SystemGuid.StepType.STEP_TYPE_CAREER_FIELD_ASSIGNMENT, 0, Authorization.EDIT, true, SystemGuid.Group.GROUP_HR, 0, "e6bcd8ee-2fea-4e99-a5d3-0d0989a0c277");
+            AddStepSecurity("Rock.Model.StepType", "StepType", SystemGuid.StepType.STEP_TYPE_CAREER_FIELD_ASSIGNMENT, 1, Authorization.EDIT, true, SystemGuid.Group.GROUP_MISSIONARY_WORKER, 0, "a31af976-a482-4260-893a-aa20b4692464");
+            AddStepSecurity("Rock.Model.StepType", "StepType", SystemGuid.StepType.STEP_TYPE_CAREER_FIELD_ASSIGNMENT, 2, Authorization.EDIT, true, Rock.SystemGuid.Group.GROUP_ADMINISTRATORS, 0, "5a6bd3e3-5bb5-4232-bee7-b995d28a1f33");
+            AddStepSecurity("Rock.Model.StepType", "StepType", SystemGuid.StepType.STEP_TYPE_CAREER_FIELD_ASSIGNMENT, 3, Authorization.EDIT, false, null, SpecialRole.AllUsers, "4d422f90-65bc-4b9c-a0f6-e56eadf12041");
+
+            // Employment
+            AddStepSecurity("Rock.Model.StepType", "StepType", SystemGuid.StepType.STEP_TYPE_CAREER_EMPLOYMENT, 0, Authorization.EDIT, true, SystemGuid.Group.GROUP_HR, 0, "5ceceb92-d44b-4d97-b379-ebcf080e9920"); 
+            AddStepSecurity("Rock.Model.StepType", "StepType", SystemGuid.StepType.STEP_TYPE_CAREER_EMPLOYMENT, 1, Authorization.EDIT, true, Rock.SystemGuid.Group.GROUP_ADMINISTRATORS, 0, "37693526-5de8-42fa-94b4-686bc6c458c3");
+            AddStepSecurity("Rock.Model.StepType", "StepType", SystemGuid.StepType.STEP_TYPE_CAREER_EMPLOYMENT, 2, Authorization.EDIT, false, null, SpecialRole.AllUsers, "398f91ee-467a-496c-a1bc-165ae6cd679d");
+
+            // Employment FSLA attribute
+            RockMigrationHelper.AddSecurityAuthForAttribute("46c4003c-9d57-4ff2-8c49-a2f3738e1999", 0, Authorization.VIEW, true, SystemGuid.Group.GROUP_HR, 0, "62b14a6c-5525-442d-a951-636e6842a1f8");
+            RockMigrationHelper.AddSecurityAuthForAttribute("46c4003c-9d57-4ff2-8c49-a2f3738e1999", 1, Authorization.VIEW, true, Rock.SystemGuid.Group.GROUP_ADMINISTRATORS, 0, "8e2ece0b-0eb6-4e2f-b076-03f64d99d31b");
+            RockMigrationHelper.AddSecurityAuthForAttribute("46c4003c-9d57-4ff2-8c49-a2f3738e1999", 1, Authorization.VIEW, false, null, (int)SpecialRole.AllUsers, "4644a936-f5c7-40d3-8e30-e9c66f65eeb2");
+
+            // Employment Minister attribute
+            RockMigrationHelper.AddSecurityAuthForAttribute("40d78067-ce1e-4a02-b8d2-b065ecfcb03f", 0, Authorization.VIEW, true, SystemGuid.Group.GROUP_HR, 0, "de376414-2ae3-4f83-9611-f8606cef1ea8");
+            RockMigrationHelper.AddSecurityAuthForAttribute("40d78067-ce1e-4a02-b8d2-b065ecfcb03f", 1, Authorization.VIEW, true, Rock.SystemGuid.Group.GROUP_ADMINISTRATORS, 0, "805a8f9e-9fdb-47c7-8508-fdc926edcb5e");
+            RockMigrationHelper.AddSecurityAuthForAttribute("40d78067-ce1e-4a02-b8d2-b065ecfcb03f", 1, Authorization.VIEW, false, null, (int)SpecialRole.AllUsers, "254545ce-c935-46cc-a857-109ff0a47f07");
+
+            // Personal Development: Book
+            AddStepSecurity("Rock.Model.StepType", "StepType", SystemGuid.StepType.STEP_TYPE_PERSONAL_DEVELOPMENT_BOOK, 0, Authorization.EDIT, true, SystemGuid.Group.GROUP_TRAINING_WORKER, 0, "4a3c19ba-a4ac-47b3-bffc-41cc8ac6149a");
+            AddStepSecurity("Rock.Model.StepType", "StepType", SystemGuid.StepType.STEP_TYPE_PERSONAL_DEVELOPMENT_BOOK, 1, Authorization.EDIT, true, SystemGuid.Group.GROUP_MISSIONARY_WORKER, 0, "742313f5-37c4-47a5-8aa5-a225c82227c8");
+            AddStepSecurity("Rock.Model.StepType", "StepType", SystemGuid.StepType.STEP_TYPE_PERSONAL_DEVELOPMENT_BOOK, 2, Authorization.EDIT, true, Rock.SystemGuid.Group.GROUP_ADMINISTRATORS, 0, "5ee63bd2-6925-480d-9fc7-9136cfe6e331");
+            AddStepSecurity("Rock.Model.StepType", "StepType", SystemGuid.StepType.STEP_TYPE_PERSONAL_DEVELOPMENT_BOOK, 3, Authorization.EDIT, false, null, SpecialRole.AllUsers, "6815583e-72c6-473d-adcb-1810c32e315a");
+
+            // Personal Development: Course
+            AddStepSecurity("Rock.Model.StepType", "StepType", SystemGuid.StepType.STEP_TYPE_PERSONAL_DEVELOPMENT_COURSE, 0, Authorization.EDIT, true, SystemGuid.Group.GROUP_TRAINING_WORKER, 0, "42f97f52-2759-44ae-960f-4ec0fc6c6991");
+            AddStepSecurity("Rock.Model.StepType", "StepType", SystemGuid.StepType.STEP_TYPE_PERSONAL_DEVELOPMENT_COURSE, 1, Authorization.EDIT, true, SystemGuid.Group.GROUP_MISSIONARY_WORKER, 0, "c0a5179d-e0fb-47b9-aa58-d2e6c286c13e");
+            AddStepSecurity("Rock.Model.StepType", "StepType", SystemGuid.StepType.STEP_TYPE_PERSONAL_DEVELOPMENT_COURSE, 2, Authorization.EDIT, true, Rock.SystemGuid.Group.GROUP_ADMINISTRATORS, 0, "f54f78ed-deb3-4113-b0af-24e67bf64a88");
+            AddStepSecurity("Rock.Model.StepType", "StepType", SystemGuid.StepType.STEP_TYPE_PERSONAL_DEVELOPMENT_COURSE, 3, Authorization.EDIT, false, null, SpecialRole.AllUsers, "0cc1e655-1ccd-4a18-8f08-5e39a5e57b9f");
+
+            // Travel: Furlough
+            AddStepSecurity("Rock.Model.StepType", "StepType", SystemGuid.StepType.STEP_TYPE_TRAVEL_FURLOUGH, 0, Authorization.EDIT, true, SystemGuid.Group.GROUP_MISSIONARY_WORKER, 0, "9895bda4-9045-4a2e-94a5-00200455281d");
+            AddStepSecurity("Rock.Model.StepType", "StepType", SystemGuid.StepType.STEP_TYPE_TRAVEL_FURLOUGH, 1, Authorization.EDIT, true, Rock.SystemGuid.Group.GROUP_ADMINISTRATORS, 0, "0b6e1b80-dd4a-4d2e-a117-b41168b3788c");
+            AddStepSecurity("Rock.Model.StepType", "StepType", SystemGuid.StepType.STEP_TYPE_TRAVEL_FURLOUGH, 2, Authorization.EDIT, false, null, SpecialRole.AllUsers, "90badfbf-2286-4569-8e0f-d9b43f8d8f2b");
+
+            // Travel: LOA
+            AddStepSecurity("Rock.Model.StepType", "StepType", SystemGuid.StepType.STEP_TYPE_TRAVEL_LEAVE_OF_ABSENCE, 0, Authorization.EDIT, true, SystemGuid.Group.GROUP_MISSIONARY_WORKER, 0, "869dce14-01e0-4a88-9558-79db8ec0a590");
+            AddStepSecurity("Rock.Model.StepType", "StepType", SystemGuid.StepType.STEP_TYPE_TRAVEL_LEAVE_OF_ABSENCE, 1, Authorization.EDIT, true, Rock.SystemGuid.Group.GROUP_ADMINISTRATORS, 0, "92f024ba-f579-4677-bda0-005d75592d95");
+            AddStepSecurity("Rock.Model.StepType", "StepType", SystemGuid.StepType.STEP_TYPE_TRAVEL_LEAVE_OF_ABSENCE, 2, Authorization.EDIT, false, null, SpecialRole.AllUsers, "e617d9d3-f92c-47b7-bf46-0273affd411a");
+
+            // Travel: Medical LOA
+            AddStepSecurity("Rock.Model.StepType", "StepType", SystemGuid.StepType.STEP_TYPE_TRAVEL_MEDICAL_LEAVE_OF_ABSENCE, 0, Authorization.EDIT, true, SystemGuid.Group.GROUP_MISSIONARY_WORKER, 0, "9a49e305-a3ca-496f-b0ba-72ef3b7bf17a");
+            AddStepSecurity("Rock.Model.StepType", "StepType", SystemGuid.StepType.STEP_TYPE_TRAVEL_MEDICAL_LEAVE_OF_ABSENCE, 1, Authorization.EDIT, true, Rock.SystemGuid.Group.GROUP_ADMINISTRATORS, 0, "d81771bb-881b-43af-af9d-7620290811d1");
+            AddStepSecurity("Rock.Model.StepType", "StepType", SystemGuid.StepType.STEP_TYPE_TRAVEL_MEDICAL_LEAVE_OF_ABSENCE, 2, Authorization.EDIT, false, null, SpecialRole.AllUsers, "d2877eda-d96c-49e5-824b-edcbc7ce0a8d");
+
+            // Travel: Medical Furlough
+            AddStepSecurity("Rock.Model.StepType", "StepType", SystemGuid.StepType.STEP_TYPE_TRAVEL_MEDICAL_FURLOUGH, 0, Authorization.EDIT, true, SystemGuid.Group.GROUP_MISSIONARY_WORKER, 0, "8872153e-9833-4a68-a2e8-4a8d4074667d");
+            AddStepSecurity("Rock.Model.StepType", "StepType", SystemGuid.StepType.STEP_TYPE_TRAVEL_MEDICAL_FURLOUGH, 1, Authorization.EDIT, true, Rock.SystemGuid.Group.GROUP_ADMINISTRATORS, 0, "00d55f2c-89e4-480f-985f-d4f0a34a9316");
+            AddStepSecurity("Rock.Model.StepType", "StepType", SystemGuid.StepType.STEP_TYPE_TRAVEL_MEDICAL_FURLOUGH, 2, Authorization.EDIT, false, null, SpecialRole.AllUsers, "dea28948-c6d3-423c-9c9d-ae3d4fe8faa4");
+
+            // Clearances: Financial
+            AddStepSecurity("Rock.Model.StepType", "StepType", SystemGuid.StepType.STEP_TYPE_CLEARANCE_FINANCIAL, 0, Authorization.EDIT, true, SystemGuid.Group.GROUP_MISS_FINN_WORKER, 0, "eff8c2ba-3f4d-4bc7-b341-95e059de1c01");
+            AddStepSecurity("Rock.Model.StepType", "StepType", SystemGuid.StepType.STEP_TYPE_CLEARANCE_FINANCIAL, 1, Authorization.EDIT, true, Rock.SystemGuid.Group.GROUP_ADMINISTRATORS, 0, "618e2623-4e25-4e25-bf32-3c31ee50ba3c");
+            AddStepSecurity("Rock.Model.StepType", "StepType", SystemGuid.StepType.STEP_TYPE_CLEARANCE_FINANCIAL, 2, Authorization.EDIT, false, null, SpecialRole.AllUsers, "ab66f221-2b54-411b-8eba-41aca7ec3aff");
+
+            // Clearances: Medical
+            AddStepSecurity("Rock.Model.StepType", "StepType", SystemGuid.StepType.STEP_TYPE_CLEARANCE_MEDICAL, 0, Authorization.EDIT, true, SystemGuid.Group.GROUP_MEDICAL_ADMIN, 0, "9511f7d6-902c-494f-8bcc-7227d8a7ff23");
+            AddStepSecurity("Rock.Model.StepType", "StepType", SystemGuid.StepType.STEP_TYPE_CLEARANCE_MEDICAL, 1, Authorization.EDIT, true, Rock.SystemGuid.Group.GROUP_ADMINISTRATORS, 0, "c4fc8bc9-efec-4eaa-a487-b6ba9e84daac");
+            AddStepSecurity("Rock.Model.StepType", "StepType", SystemGuid.StepType.STEP_TYPE_CLEARANCE_MEDICAL, 2, Authorization.EDIT, false, null, SpecialRole.AllUsers, "62b9f17d-a5b6-4660-8218-81052019baeb");
         }
 
         public override void Down()
@@ -659,6 +839,9 @@ VALUES
             // Remove Block: Steps Timeline, from Page: Timelines, Site: Rock RMS
             RockMigrationHelper.DeleteBlock("8995F48B-CEA0-439C-924C-ADF96ACC93CC");
 
+            // Remove Block: Step Entry, from Page: Step Entry, Site: Rock RMS
+            RockMigrationHelper.DeleteBlock("985EBD06-AD2E-4FF5-8B1C-64C30710F91C");
+
 
             // Delete BlockType Steps Timeline
             RockMigrationHelper.DeleteBlockType("46A95A66-8FAC-4327-837D-EE846A424982"); // Steps Timeline
@@ -667,10 +850,14 @@ VALUES
             // Delete BlockType Steps Timeline
             RockMigrationHelper.DeleteBlockType("46A95A66-8FAC-4327-837D-EE846A424982"); // Steps Timeline
 
+            // Delete Page Step Entry from Site:Rock RMS
+            RockMigrationHelper.DeletePage("6A4F75A3-95D1-43D5-AAF7-93CEC040F346"); //  Page: Step Entry, Layout: Full Width, Site: Rock RMS
 
             // Delete Page Timelines from Site:Rock RMS
             RockMigrationHelper.DeletePage("18E2C178-DD5D-4031-960A-71994057FDE4"); //  Page: Timelines, Layout: PersonDetail, Site: Rock RMS
 
+            // Delete Field Type
+            RockMigrationHelper.DeleteFieldType(SystemGuid.FieldType.FIELD_TYPE_CAMPUS_GROUP_ROLE);
         }
     }
 }

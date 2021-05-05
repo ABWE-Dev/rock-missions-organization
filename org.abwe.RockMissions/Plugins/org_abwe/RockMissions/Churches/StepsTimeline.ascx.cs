@@ -26,6 +26,7 @@ using Rock.Data;
 using Rock.Model;
 using Rock.Web.UI;
 using Rock.Web.UI.Controls;
+using Rock.Security;
 
 namespace RockWeb.Plugins.org_abwe.RockMissions
 {
@@ -83,7 +84,7 @@ namespace RockWeb.Plugins.org_abwe.RockMissions
         {
             _blockSettingsStepTypeIds = this.GetAttributeValue(AttributeKey.StepTypes).SplitDelimitedValues().AsIntegerList();//.Select( a => GroupTypeCache.Get( a ) ).Where( a => a != null ).Select( a => a.Id ).ToList();
 
-            IEnumerable<StepTypeCache> stepTypes = StepTypeCache.All();
+            IEnumerable<StepTypeCache> stepTypes = StepTypeCache.All().Where(st => st.IsAuthorized(Authorization.VIEW, CurrentPerson));
 
             if (_blockSettingsStepTypeIds.Any() )
             {
@@ -95,7 +96,7 @@ namespace RockWeb.Plugins.org_abwe.RockMissions
             cblStepTypes.DataValueField = "Id";
             cblStepTypes.DataBind();
 
-            ddAddStep.DataSource = stepTypes;
+            ddAddStep.DataSource = stepTypes.OrderBy(st => st.Name).Where(st => st.IsAuthorized(Authorization.EDIT, CurrentPerson)); ;
             ddAddStep.DataBind();
         }
 
@@ -179,6 +180,7 @@ namespace RockWeb.Plugins.org_abwe.RockMissions
             hfStepTypeIds.Value = stepTypeIds.AsDelimited( "," );
 
             var legendGroupTypes = StepTypeCache.All().AsEnumerable();
+            
             if (stepTypeIds.Any() )
             {
                 legendGroupTypes = legendGroupTypes.Where( a => stepTypeIds.Contains( a.Id ) );

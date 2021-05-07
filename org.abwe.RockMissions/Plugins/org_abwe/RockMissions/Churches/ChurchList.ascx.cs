@@ -205,7 +205,6 @@ namespace RockWeb.Plugins.org_abwe.RockMissions
         private void BindGrid()
         {
             var rockContext = new RockContext();
-            var recordTypeValueId = DefinedValueCache.Get(org.abwe.RockMissions.SystemGuid.DefinedValue.PERSON_RECORD_TYPE_CHURCH.AsGuid() ).Id;
             var churchGroupType = GroupTypeCache.Get(org.abwe.RockMissions.SystemGuid.GroupType.GROUPTYPE_CHURCH.AsGuid());
             var churchRole = churchGroupType.Roles.FirstOrDefault(r => r.Guid.Equals(org.abwe.RockMissions.SystemGuid.GroupTypeRole.GROUPROLE_CHURCH.AsGuid()));
 

@@ -59,6 +59,5 @@ namespace org.abwe.RockMissions.SystemGuid
         /// </summary>
         public const string ACCOUNT_TYPE_PROJECT = "FB0507A0-4D30-41D6-98E1-A48BC9F35967";
 
-        public const string PERSON_RECORD_TYPE_CHURCH = "d982a508-f991-4f85-993b-dd487a748897";
     }
 }

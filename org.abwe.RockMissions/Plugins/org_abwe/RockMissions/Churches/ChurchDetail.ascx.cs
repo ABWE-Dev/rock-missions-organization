@@ -312,9 +312,8 @@ namespace RockWeb.Plugins.org_abwe.RockMissions
         protected void gContactList_RowSelected( object sender, Rock.Web.UI.Controls.RowEventArgs e )
         {
             var queryParams = new Dictionary<string, string>();
-            var person = e.Row.DataItem as Person;
-            queryParams.Add( "PersonId", person.Id.ToString() );
-            NavigateToLinkedPage( "PersonProfilePage", queryParams );
+            queryParams.Add("PersonId", e.RowKeyId.ToString());
+            NavigateToLinkedPage("PersonProfilePage", queryParams);
         }
 
         /// <summary>
@@ -700,7 +699,7 @@ namespace RockWeb.Plugins.org_abwe.RockMissions
                     )
                     .Select(a => new
                     {
-                        Id = a.Id,
+                        Id = a.Person.Id,
                         Person = a.Person,
                         GroupRole = a.GroupRole
                     })

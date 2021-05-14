@@ -120,56 +120,28 @@ namespace Rock.Field.Types
         {
             string formattedValue = string.Empty;
 
-            Guid? groupTypeGuid = null;
-            Guid? campusGuid = null;
             Guid? groupGuid = null;
             Guid? groupTypeRoleGuid = null;
 
             string[] parts = ( value ?? string.Empty ).Split( new char[] { '|' } );
             if ( parts.Length > 0 )
             {
-                groupTypeGuid = parts[0].AsGuidOrNull();
-                if (parts.Length > 1)
-                {
-                    campusGuid = parts[1].AsGuidOrNull();
-                }
+                groupGuid = parts[0].AsGuidOrNull();
 
-                if ( parts.Length > 2 )
+                if ( parts.Length > 1 )
                 {
-                    groupGuid = parts[2].AsGuidOrNull();
-                }
-
-                if ( parts.Length > 3 )
-                {
-                    groupTypeRoleGuid = parts[3].AsGuidOrNull();
+                    groupTypeRoleGuid = parts[1].AsGuidOrNull();
                 }
             }
 
             using ( var rockContext = new RockContext() )
             {
-                if ( campusGuid.HasValue )
-                {
-                    var campus = new CampusService(rockContext).GetNoTracking(campusGuid.Value);
-                    if ( campus != null )
-                    {
-                        formattedValue = "Campus: " + campus.Name;
-                    }
-                }
-
                 if ( groupGuid.HasValue )
                 {
                     var group = new GroupService( rockContext ).GetNoTracking( groupGuid.Value );
                     if ( group != null )
                     {
                         formattedValue += string.IsNullOrEmpty(formattedValue) ? "Group: " + group.Name : ", " + "Group: " + group.Name;
-                    }
-                }
-                else if ( groupTypeGuid.HasValue )
-                {
-                    var groupType = new GroupTypeService( rockContext ).GetNoTracking( groupTypeGuid.Value );
-                    if ( groupType != null )
-                    {
-                        formattedValue = string.IsNullOrEmpty(formattedValue) ? "Group type: " + groupType.Name : ", " + "Group type: " + groupType.Name;
                     }
                 }
 
@@ -222,27 +194,8 @@ namespace Rock.Field.Types
             {
                 var rockContext = new RockContext();
 
-                Guid? groupTypeGuid = null;
-                Guid? campusGuid = null;
                 Guid? groupGuid = null;
                 Guid? groupTypeRoleGuid = null;
-                if ( groupAndRolePicker.GroupTypeId.HasValue )
-                {
-                    var groupType = new GroupTypeService( rockContext ).GetNoTracking( groupAndRolePicker.GroupTypeId.Value );
-                    if ( groupType != null )
-                    {
-                        groupTypeGuid = groupType.Guid;
-                    }
-                }
-
-                if ( groupAndRolePicker.CampusId.HasValue )
-                {
-                    var campus = new CampusService(rockContext).GetNoTracking(groupAndRolePicker.CampusId.Value);
-                    if (campus != null)
-                    {
-                        campusGuid = campus.Guid;
-                    }
-                }
 
                 if ( groupAndRolePicker.GroupId.HasValue )
                 {
@@ -262,9 +215,9 @@ namespace Rock.Field.Types
                     }
                 }
 
-                if ( groupTypeGuid.HasValue || groupGuid.HasValue || groupTypeRoleGuid.HasValue )
+                if ( groupGuid.HasValue || groupTypeRoleGuid.HasValue )
                 {
-                    return string.Format( "{0}|{1}|{2}|{3}", groupTypeGuid, campusGuid, groupGuid, groupTypeRoleGuid );
+                    return string.Format( "{0}|{1}", groupGuid, groupTypeRoleGuid );
                 }
             }
 
@@ -283,42 +236,22 @@ namespace Rock.Field.Types
             if ( groupAndRolePicker != null )
             {
                 // initialize in case the value isn't set
-                groupAndRolePicker.GroupTypeId = null;
                 groupAndRolePicker.GroupId = null;
                 groupAndRolePicker.GroupRoleId = null;
-                groupAndRolePicker.CampusId = null;
 
                 string[] parts = ( value ?? string.Empty ).Split( '|' );
                 var rockContext = new RockContext();
                 if ( parts.Length >= 1 )
                 {
-                    var groupType = new GroupTypeService( rockContext ).Get( parts[0].AsGuid() );
-                    if ( groupType != null )
+                    var group = new GroupService( rockContext ).Get( parts[0].AsGuid() );
+                    if ( group != null )
                     {
-                        groupAndRolePicker.GroupTypeId = groupType.Id;
+                        groupAndRolePicker.GroupId = group.Id;
                     }
 
-                    if (parts.Length >= 2)
+                    if ( parts.Length >= 2 )
                     {
-                        var campus = new CampusService(rockContext).Get(parts[1].AsGuid());
-                        if (campus != null)
-                        {
-                            groupAndRolePicker.CampusId = campus.Id;
-                        }
-                    }
-
-                    if ( parts.Length >= 3 )
-                    {
-                        var group = new GroupService( rockContext ).Get( parts[2].AsGuid() );
-                        if ( group != null )
-                        {
-                            groupAndRolePicker.GroupId = group.Id;
-                        }
-                    }
-
-                    if ( parts.Length >= 4 )
-                    {
-                        var groupTypeRole = new GroupTypeRoleService( rockContext ).Get( parts[3].AsGuid() );
+                        var groupTypeRole = new GroupTypeRoleService( rockContext ).Get( parts[1].AsGuid() );
                         if ( groupTypeRole != null )
                         {
                             groupAndRolePicker.GroupRoleId = groupTypeRole.Id;

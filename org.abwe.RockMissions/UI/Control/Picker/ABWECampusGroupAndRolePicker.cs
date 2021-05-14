@@ -23,6 +23,7 @@ using System.Web.UI.WebControls;
 
 using Rock.Data;
 using Rock.Model;
+using Rock.Web.Cache;
 
 namespace Rock.Web.UI.Controls
 {
@@ -147,7 +148,6 @@ namespace Rock.Web.UI.Controls
             {
                 EnsureChildControls();
                 _ddlGroup.Required = value;
-                _ddlGroupType.Required = value;
 
                 if ( value == false )
                 {
@@ -272,65 +272,13 @@ namespace Rock.Web.UI.Controls
         #endregion
 
         #region Controls
-
-        private RockDropDownList _ddlGroupType;
-        private RockDropDownList _ddlGroup;
+        
+        private GroupPicker _ddlGroup;
         private RockDropDownList _ddlGroupRole;
-        private CampusPicker _ddlCampus;
 
         #endregion
 
         #region Properties
-
-        /// <summary>
-        /// Gets or sets the group type id.
-        /// </summary>
-        /// <value>
-        /// The group type id.
-        /// </value>
-        public int? GroupTypeId
-        {
-            get
-            {
-                EnsureChildControls();
-                return _ddlGroupType.SelectedValue.AsIntegerOrNull();
-            }
-
-            set
-            {
-                EnsureChildControls();
-                _ddlGroupType.SetValue( value );
-                if ( value.HasValue )
-                {
-                    LoadGroupsAndRoles( value.Value, CampusId );
-                }
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the campus identifier.
-        /// </summary>
-        /// <value>
-        /// The campus identifier.
-        /// </value>
-        public int? CampusId
-        {
-            get
-            {
-                EnsureChildControls();
-                return _ddlCampus.SelectedValue.AsIntegerOrNull();
-            }
-
-            set
-            {
-                EnsureChildControls();
-                _ddlCampus.SetValue(value);
-                if (value.HasValue)
-                {
-                    LoadGroupsAndRoles(GroupTypeId, value.Value);
-                }
-            }
-        }
 
         /// <summary>
         /// Gets or sets the group identifier.
@@ -352,19 +300,9 @@ namespace Rock.Web.UI.Controls
                 int groupId = value ?? 0;
                 if ( _ddlGroup.SelectedValue != groupId.ToString() )
                 {
-                    if ( !GroupTypeId.HasValue || CampusId.HasValue )
-                    {
-                        var group = new Rock.Model.GroupService( new RockContext() ).Get( groupId );
-                        if ( group != null &&
-                            _ddlGroupType.SelectedValue != group.GroupTypeId.ToString() )
-                        {
-                            _ddlGroupType.SelectedValue = group.GroupTypeId.ToString();
-
-                            LoadGroupsAndRoles( group.GroupTypeId, CampusId );
-                        }
-                    }
-
                     _ddlGroup.SetValue( groupId );
+
+                    LoadGroupsAndRoles(groupId);
                 }
             }
         }
@@ -408,18 +346,6 @@ namespace Rock.Web.UI.Controls
                 int groupRoleId = value ?? 0;
                 if ( _ddlGroupRole.SelectedValue != groupRoleId.ToString() )
                 {
-                    if ( !GroupTypeId.HasValue )
-                    {
-                        var groupRole = new Rock.Model.GroupTypeRoleService( new RockContext() ).Get( groupRoleId );
-                        if ( groupRole != null &&
-                            _ddlGroupType.SelectedValue != groupRole.GroupTypeId.ToString() )
-                        {
-                            _ddlGroupType.SelectedValue = groupRole.GroupTypeId.ToString();
-
-                            LoadGroupsAndRoles( groupRole.GroupTypeId, CampusId );
-                        }
-                    }
-
                     _ddlGroupRole.SetValue( groupRoleId );
                 }
             }
@@ -447,34 +373,28 @@ namespace Rock.Web.UI.Controls
             base.CreateChildControls();
             Controls.Clear();
 
-            _ddlGroupType = new RockDropDownList();
-            _ddlCampus = new CampusPicker();
-            _ddlGroup = new RockDropDownList();
-            _ddlGroupRole = new RockDropDownList();
+            _ddlGroup = new GroupPicker();
+            var groupTypeIds = GroupTypeCache.All().Where(gt => gt.Guid == org.abwe.RockMissions.SystemGuid.GroupType.GROUPTYPE_AREA.AsGuid()
+                || gt.Guid == org.abwe.RockMissions.SystemGuid.GroupType.GROUPTYPE_REGION.AsGuid()
+                || gt.Guid == org.abwe.RockMissions.SystemGuid.GroupType.GROUPTYPE_TEAM.AsGuid()
+                || gt.Guid == org.abwe.RockMissions.SystemGuid.GroupType.GROUPTYPE_DEPARTMENT.AsGuid()
+                || gt.Guid == org.abwe.RockMissions.SystemGuid.GroupType.GROUPTYPE_MISSIONARIES.AsGuid() ).Select(gt => gt.Id).ToList();
+            _ddlGroup.IncludedGroupTypeIds = groupTypeIds;
+            _ddlGroup.Required = true;
             
+            _ddlGroupRole = new RockDropDownList();
+
             RockControlHelper.CreateChildControls( this, Controls );
             
-            _ddlGroupType.ID = this.ID + "_ddlGroupType";
-            _ddlGroupType.AutoPostBack = true;
-            _ddlGroupType.SelectedIndexChanged += _ddlGroupType_SelectedIndexChanged;
-            _ddlGroupType.Label = "Group Type";
-            Controls.Add( _ddlGroupType );
-
-            _ddlCampus.ID = this.ID + "_ddlCampus";
-            _ddlCampus.AutoPostBack = true;
-            _ddlCampus.SelectedIndexChanged += _ddlGroupType_SelectedIndexChanged;
-            _ddlCampus.IncludeInactive = false;
-            Controls.Add( _ddlCampus );
-            
             _ddlGroup.ID = this.ID + "_ddlGroup";
+            _ddlGroup.ValueChanged += _ddlGroup_SelectedIndexChanged;
             Controls.Add( _ddlGroup );
 
-            this.RequiredFieldValidator.ControlToValidate = _ddlGroup.ID;
             
             _ddlGroupRole.ID = this.ID + "_ddlGroupRole";
             Controls.Add( _ddlGroupRole );
 
-            LoadGroupTypes();
+            this.RequiredFieldValidator.ControlToValidate = _ddlGroupRole.ID;
         }
 
         /// <summary>
@@ -482,11 +402,13 @@ namespace Rock.Web.UI.Controls
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
-        protected void _ddlGroupType_SelectedIndexChanged( object sender, EventArgs e )
+        protected void _ddlGroup_SelectedIndexChanged( object sender, EventArgs e )
         {
-            int groupTypeId = _ddlGroupType.SelectedValue.AsInteger();
-            int? campusId = _ddlCampus.SelectedValue.AsIntegerOrNull();
-            LoadGroupsAndRoles( groupTypeId, campusId );
+            int groupId = _ddlGroup.SelectedValue.AsInteger();
+
+            int groupTypeId = new GroupService(new RockContext()).Get(groupId).GroupTypeId;
+            
+            LoadGroupsAndRoles( groupTypeId );
         }
 
         /// <summary>
@@ -507,9 +429,6 @@ namespace Rock.Web.UI.Controls
         /// <param name="writer">The writer.</param>
         public void RenderBaseControl( HtmlTextWriter writer )
         {
-            _ddlGroup.Visible = GroupTypeId.HasValue;
-            _ddlCampus.RenderControl( writer );
-            _ddlGroupType.RenderControl( writer );
             _ddlGroup.Label = this.GroupControlLabel;
             _ddlGroup.RenderControl( writer );
             _ddlGroupRole.Label = "Role";
@@ -517,61 +436,23 @@ namespace Rock.Web.UI.Controls
         }
 
         /// <summary>
-        /// Loads the group types.
-        /// </summary>
-        private void LoadGroupTypes()
-        {
-            _ddlGroupType.Items.Clear();
-            _ddlGroupType.Items.Add( Rock.Constants.None.ListItem );
-
-            var groupTypeService = new Rock.Model.GroupTypeService( new RockContext() );
-
-            // get all group types that have the ShowInGroupList flag set
-            var groupTypes = groupTypeService.Queryable().Where( a => a.ShowInGroupList ).OrderBy( a => a.Name ).ToList();
-
-            foreach ( var g in groupTypes )
-            {
-                _ddlGroupType.Items.Add( new ListItem( g.Name, g.Id.ToString().ToUpper() ) );
-            }
-        }
-
-        /// <summary>
         /// Loads the groups.
         /// </summary>
         /// <param name="groupTypeId">The group type identifier.</param>
-        private void LoadGroupsAndRoles( int? groupTypeId, int? campusId )
+        private void LoadGroupsAndRoles( int? groupId )
         {
             int? currentGroupId = this.GroupId;
             int? currentGroupRoleId = this.GroupRoleId;
-            _ddlGroup.SelectedValue = null;
-            _ddlGroup.Items.Clear();
 
             _ddlGroupRole.SelectedValue = null;
             _ddlGroupRole.Items.Clear();
-            if ( groupTypeId.HasValue )
+            if ( groupId.HasValue )
             {
-                _ddlGroup.Items.Add( new ListItem() );
-
                 var rockContext = new RockContext();
-                var groupService = new Rock.Model.GroupService( rockContext );
-                List<Group> groups;
-                if (campusId.HasValue)
-                {
-                    groups = groupService.Queryable().Where(r => r.GroupTypeId == groupTypeId.Value && r.CampusId == campusId.Value).OrderBy(a => a.Name).ToList();
-                } else
-                {
-                    groups = groupService.Queryable().Where(r => r.GroupTypeId == groupTypeId.Value).OrderBy(a => a.Name).ToList();
-                }
 
-                foreach ( var r in groups )
-                {
-                    var item = new ListItem( r.Name, r.Id.ToString().ToUpper() );
-                    item.Selected = r.Id == currentGroupId;
-                    _ddlGroup.Items.Add( item );
-                }
-
+                var groupTypeId = new Rock.Model.GroupService(rockContext).Get(groupId.Value).GroupTypeId;
                 var groupTypeRoleService = new Rock.Model.GroupTypeRoleService( rockContext );
-                var groupRoles = groupTypeRoleService.Queryable().Where( r => r.GroupTypeId == groupTypeId.Value ).OrderBy( a => a.Order ).ThenBy( a => a.Name ).ToList();
+                var groupRoles = groupTypeRoleService.Queryable().Where( r => r.GroupTypeId == groupTypeId ).OrderBy( a => a.Order ).ThenBy( a => a.Name ).ToList();
 
                 // add a blank option as first item
                 _ddlGroupRole.Items.Add( new ListItem() );

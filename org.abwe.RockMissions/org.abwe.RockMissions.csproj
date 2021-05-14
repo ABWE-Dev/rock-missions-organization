@@ -72,6 +72,7 @@
   <ItemGroup>
     <Compile Include="FieldType\ABWECampusGroupAndRoleFieldType.cs" />
     <Compile Include="Migrations\011_AreaRegionFieldGroups.cs" />
+    <Compile Include="Migrations\014_DepartmentsAndGroups.cs" />
     <Compile Include="Migrations\015_EmploymentDepartmentAndSupervisor.cs" />
     <Compile Include="Migrations\012_SecurityRoles.cs" />
     <Compile Include="Migrations\014_StepWorkflows.cs" />
@@ -80,6 +81,7 @@
     <Compile Include="Migrations\009_ChurchGroup.cs" />
     <Compile Include="Migrations\016_ChurchPages.cs" />
     <Compile Include="Reporting\DataTransform\SendingChurchTransform.cs" />
+    <Compile Include="Search\MissionaryName.cs" />
     <Compile Include="SystemGuid\Group.cs" />
     <Compile Include="SystemGuid\Category.cs" />
     <Compile Include="SystemGuid\FieldType.cs" />

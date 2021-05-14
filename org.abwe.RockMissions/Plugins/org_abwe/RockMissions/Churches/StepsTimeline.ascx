@@ -132,7 +132,7 @@
                     <i title="Options" class="fa fa-gear"></i>
                 </a>
 
-                <div class="btn-group btn-group-xs margin-l-sm" role="group" aria-label="...">
+                <div class="btn-group btn-group-xs margin-l-sm hidden-xs" role="group" aria-label="...">
                     <button type="button" class="btn btn-default" onclick="gantt.change_view_mode('Week')">Week</button>
                     <button type="button" class="btn btn-default" onclick="gantt.change_view_mode('Month')">Month</button>
                     <button type="button" class="btn btn-default" onclick="gantt.change_view_mode('Year')">Year</button>
@@ -199,7 +199,7 @@
             function getStepTitle(step) {
                 switch (step.StepType.Guid) {
                     case 'ff3e7f7f-4127-4a95-8990-2eecf2cc7c03': // Field Assignment
-                        return `${step.AttributeValues["Assignment"].ValueFormatted}`;
+                        return `${step.AttributeValues["Details"].ValueFormatted}`;
 
                     case '7aae4cbb-9058-4beb-968b-4c0d9c92b4ef': // Appointment
                         return `${step.AttributeValues["Commitment"].ValueFormatted} ${step.AttributeValues["Length"].ValueFormatted} ${step.AttributeValues["Associate"].Value == "True" ? "Associate" : ""}`;

@@ -23,7 +23,7 @@ namespace org.abwe.RockMissions.Migrations
             RockMigrationHelper.AddGroupType("Leads", "A missions organization group of leads", "Group", "Lead", false, true, true, "", 0, SystemGuid.GroupType.GROUPTYPE_DEPARTMENT, 0, null, SystemGuid.GroupType.GROUPTYPE_LEADS);
             RockMigrationHelper.AddGroupType("Volunteers", "A missions organization group of volunteers", "Group", "Volunteer", false, true, true, "", 0, SystemGuid.GroupType.GROUPTYPE_DEPARTMENT, 0, null, SystemGuid.GroupType.GROUPTYPE_VOLUNTEERS);
             RockMigrationHelper.AddGroupType("Applicants", "A missions organization group of applicants", "Group", "Applicant", false, true, true, "", 0, SystemGuid.GroupType.GROUPTYPE_DEPARTMENT, 0, null, SystemGuid.GroupType.GROUPTYPE_APPLICANTS);
-            RockMigrationHelper.AddGroupType("Missionaries", "A missions organization group of missionaries", "Group", "Member", false, true, true, "", 0, SystemGuid.GroupType.GROUPTYPE_DEPARTMENT, 0, null, SystemGuid.GroupType.GROUPTYPE_MiSSIONARIES);
+            RockMigrationHelper.AddGroupType("Missionaries", "A missions organization group of missionaries", "Group", "Member", false, true, true, "", 0, SystemGuid.GroupType.GROUPTYPE_DEPARTMENT, 0, null, SystemGuid.GroupType.GROUPTYPE_MISSIONARIES);
             Sql(@"UPDATE [GroupType] SET [AllowAnyChildGroupType] = 1 WHERE [Guid] = '" + SystemGuid.GroupType.GROUPTYPE_DEPARTMENT + "'");
 
             // Entity: Rock.Model.Group Attribute: Department
@@ -77,8 +77,8 @@ namespace org.abwe.RockMissions.Migrations
 	            ([GroupTypeId], [ChildGroupTypeId])
               SELECT [GroupType].[Id], [ChildGroupType].Id
               FROM [GroupType]
-              OUTER APPLY ( SELECT Id FROM GroupType WHERE [Guid] = '{SystemGuid.GroupType.GROUPTYPE_MiSSIONARIES}' OR [Guid] = '{SystemGuid.GroupType.GROUPTYPE_AREA}' OR [Guid] = '{SystemGuid.GroupType.GROUPTYPE_REGION}' OR [Guid] = '{SystemGuid.GroupType.GROUPTYPE_TEAM}' ) [ChildGroupType]
-              WHERE [GroupType].[Guid] = '{SystemGuid.GroupType.GROUPTYPE_MiSSIONARIES}'");
+              OUTER APPLY ( SELECT Id FROM GroupType WHERE [Guid] = '{SystemGuid.GroupType.GROUPTYPE_MISSIONARIES}' OR [Guid] = '{SystemGuid.GroupType.GROUPTYPE_AREA}' OR [Guid] = '{SystemGuid.GroupType.GROUPTYPE_REGION}' OR [Guid] = '{SystemGuid.GroupType.GROUPTYPE_TEAM}' ) [ChildGroupType]
+              WHERE [GroupType].[Guid] = '{SystemGuid.GroupType.GROUPTYPE_MISSIONARIES}'");
         }
 
         public override void Down()
@@ -89,7 +89,7 @@ namespace org.abwe.RockMissions.Migrations
             RockMigrationHelper.DeleteGroupType(SystemGuid.GroupType.GROUPTYPE_LEADS);
             RockMigrationHelper.DeleteGroupType(SystemGuid.GroupType.GROUPTYPE_APPLICANTS);
             RockMigrationHelper.DeleteGroupType(SystemGuid.GroupType.GROUPTYPE_VOLUNTEERS);
-            RockMigrationHelper.DeleteGroupType(SystemGuid.GroupType.GROUPTYPE_MiSSIONARIES);
+            RockMigrationHelper.DeleteGroupType(SystemGuid.GroupType.GROUPTYPE_MISSIONARIES);
             RockMigrationHelper.DeleteGroupType(SystemGuid.GroupType.GROUPTYPE_DEPARTMENT);
 
             RockMigrationHelper.DeleteDefinedType(SystemGuid.DefinedType.DEPARTMENTS);

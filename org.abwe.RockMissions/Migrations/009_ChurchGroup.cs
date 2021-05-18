@@ -18,7 +18,7 @@ namespace org.abwe.RockMissions.Migrations
             RockMigrationHelper.UpdateCategory("5997c8d3-8840-4591-99a5-552919f90cbd", "Church", "fa fa-church", "", "507a81e4-07ae-4983-a8f2-689757b28a32");
 
             RockMigrationHelper.UpdateGroupType("Church", "the structure representing a church person record and other actual persons with a relationship to the church",
-                "Church Group", "Contact", "8bf35114-0d72-4d3d-b15d-0ffe241ae81d", false, false, false, "fa fa-church", 0, null, 1, "", "be7a89fa-4815-4258-a9c6-c08c058ee933");
+                "Church Group", "Contact", "8bf35114-0d72-4d3d-b15d-0ffe241ae81d", false, true, false, "fa fa-church", 0, null, 1, "", "be7a89fa-4815-4258-a9c6-c08c058ee933");
 
             RockMigrationHelper.UpdateGroupTypeRole("be7a89fa-4815-4258-a9c6-c08c058ee933", "Admin Contact", "", 0, null, null, "8bf35114-0d72-4d3d-b15d-0ffe241ae81d", true, false, true);
             RockMigrationHelper.UpdateGroupTypeRole("be7a89fa-4815-4258-a9c6-c08c058ee933", "Sent Missionary", "", 1, null, null, "1084eb40-3166-46c6-b0b6-1ac9abc6f6e2", true, false, false);

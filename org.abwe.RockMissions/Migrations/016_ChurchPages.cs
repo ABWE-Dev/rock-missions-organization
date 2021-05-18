@@ -25,7 +25,7 @@ namespace org.abwe.RockMissions.Migrations
             RockMigrationHelper.AddPage(true, "28DAC404-FB2E-4312-9370-0E9579506485", "D65F783D-87A9-4CC9-8110-E83466A0EADB", "Church Details", "", "75C9536A-C984-48AB-B7D4-E036C0AD59A1", "");
 
             // Add Page Churches to Site:Rock RMS
-            RockMigrationHelper.AddPage(true, "BF04BB7E-BE3A-4A38-A37C-386B55496303", "F66758C6-3E3D-4598-AF4C-B317047B5987", "Churches", "", "E87CC2CE-A744-4311-A54A-C62CD7470B91", "");
+            RockMigrationHelper.AddPage(true, "BF04BB7E-BE3A-4A38-A37C-386B55496303", "F66758C6-3E3D-4598-AF4C-B317047B5987", "Churches", "", "E87CC2CE-A744-4311-A54A-C62CD7470B91", "", "CB9ABA3B-6962-4A42-BDA1-EA71B7309232");
 
             // Add Page Route for Churches
             RockMigrationHelper.AddPageRoute("E87CC2CE-A744-4311-A54A-C62CD7470B91", "Person/{PersonId}/Churches", "987048F6-19B7-4D72-9A1C-EEED3D9DAD53");

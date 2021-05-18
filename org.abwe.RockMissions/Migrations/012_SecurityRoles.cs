@@ -15,12 +15,12 @@ namespace org.abwe.RockMissions.Migrations
     {
         public override void Up()
         {
-            RockMigrationHelper.AddSecurityRoleGroup("RSR - HR Worker", "Missions org HR workers. This allows editing appointment and employment timelines, as well as viewing restricted employment information.",SystemGuid.Group.GROUP_HR);
-            RockMigrationHelper.AddSecurityRoleGroup("RSR - Missionary Worker", "Missions org missionary workers. This allows editing field assignments, appointments, and partner information.", SystemGuid.Group.GROUP_MISSIONARY_WORKER);
-            RockMigrationHelper.AddSecurityRoleGroup("RSR - Application Worker", "Missions org application workers. This allows viewing and managing applicants and their applications.", SystemGuid.Group.GROUP_APPLICATION_WORKER);
-            RockMigrationHelper.AddSecurityRoleGroup("RSR - Training Worker", "Missions org training workers. This allows administrating trainings, dates, courses, and providers.", SystemGuid.Group.GROUP_TRAINING_WORKER);
-            RockMigrationHelper.AddSecurityRoleGroup("RSR - Missionary Finance Worker", "Missions org missionary finance workers. This allows the user to manage account associations, view missionary finances and support commitments.", SystemGuid.Group.GROUP_MISS_FINN_WORKER);
-            RockMigrationHelper.AddSecurityRoleGroup("RSR - Medical Administrator", "Missions org missionary medical administrators-. This allows the user to edit medical clearances.", SystemGuid.Group.GROUP_MEDICAL_ADMIN);
+            RockMigrationHelper.AddSecurityRoleGroup("MSO - HR Worker", "Missions org HR workers. This allows editing appointment and employment timelines, as well as viewing restricted employment information.",SystemGuid.Group.GROUP_HR);
+            RockMigrationHelper.AddSecurityRoleGroup("MSO - Missionary Worker", "Missions org missionary workers. This allows editing field assignments, appointments, and partner information.", SystemGuid.Group.GROUP_MISSIONARY_WORKER);
+            RockMigrationHelper.AddSecurityRoleGroup("MSO - Application Worker", "Missions org application workers. This allows viewing and managing applicants and their applications.", SystemGuid.Group.GROUP_APPLICATION_WORKER);
+            RockMigrationHelper.AddSecurityRoleGroup("MSO - Training Worker", "Missions org training workers. This allows administrating trainings, dates, courses, and providers.", SystemGuid.Group.GROUP_TRAINING_WORKER);
+            RockMigrationHelper.AddSecurityRoleGroup("MSO - Missionary Finance Worker", "Missions org missionary finance workers. This allows the user to manage account associations, view missionary finances and support commitments.", SystemGuid.Group.GROUP_MISS_FINN_WORKER);
+            RockMigrationHelper.AddSecurityRoleGroup("MSO - Medical Administrator", "Missions org missionary medical administrators-. This allows the user to edit medical clearances.", SystemGuid.Group.GROUP_MEDICAL_ADMIN);
 
             // Primary Account attribute
             RockMigrationHelper.AddSecurityAuthForAttribute("996ED11A-1CA3-4980-BE94-58B7B41E2D1F", 0, Authorization.EDIT, true, SystemGuid.Group.GROUP_MISS_FINN_WORKER, 0, "c2bb132b-e8e3-43c8-8e75-15c75ae26cec");

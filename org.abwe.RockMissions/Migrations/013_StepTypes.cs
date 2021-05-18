@@ -95,7 +95,7 @@ namespace org.abwe.RockMissions.Migrations
             RockMigrationHelper.UpdateFieldType("Missions Org Group and Role", "Field Type to select a specific group and role", "org.abwe.RockMissions", "Rock.Field.Types.ABWECampusGroupAndRoleFieldType", SystemGuid.FieldType.FIELD_TYPE_CAMPUS_GROUP_ROLE, true);
 
             RockMigrationHelper.AddDefinedType("Missions Orgs", "Courses", "Missions Organization courses for personal development", "E811C31F-475E-42DE-B754-B6A63EC1ABBD", @"");
-            RockMigrationHelper.UpdateDefinedValue("E811C31F-475E-42DE-B754-B6A63EC1ABBD", "Good Soil", "", "3886578B-48EB-4607-9A0E-4BBE1ADCC880", false);
+            RockMigrationHelper.UpdateDefinedValue("E811C31F-475E-42DE-B754-B6A63EC1ABBD", "Sample Course", "", "3886578B-48EB-4607-9A0E-4BBE1ADCC880", false);
 
             // Add Step Types and Attributes
             Sql(@"
@@ -587,7 +587,7 @@ VALUES
             // Qualifier for attribute: Location
             RockMigrationHelper.UpdateAttributeQualifier("D9C29CEB-1180-4826-8208-522DE5F93C26", "showcountdown", @"False", "6DC5D2B8-A3BD-4196-879E-48B6074FD5FC");
             // Qualifier for attribute: Course
-            RockMigrationHelper.UpdateAttributeQualifier("D47DE59B-B3E2-476A-AAFF-C5722B466B7F", "definedtype", @"98", "7657EE8C-636F-4855-BCCE-149A0541B1FA");
+            RockMigrationHelper.UpdateAttributeQualifier("D47DE59B-B3E2-476A-AAFF-C5722B466B7F", "definedtype", SqlScalar("SELECT [Id] FROM DefinedType WHERE [Guid] = 'E811C31F-475E-42DE-B754-B6A63EC1ABBD'").ToString(), "7657EE8C-636F-4855-BCCE-149A0541B1FA");
             // Qualifier for attribute: Course
             RockMigrationHelper.UpdateAttributeQualifier("D47DE59B-B3E2-476A-AAFF-C5722B466B7F", "allowmultiple", @"False", "04A16101-4908-4AFD-A263-E6B254C73833");
             // Qualifier for attribute: Course
@@ -597,7 +597,7 @@ VALUES
             // Qualifier for attribute: Course
             RockMigrationHelper.UpdateAttributeQualifier("D47DE59B-B3E2-476A-AAFF-C5722B466B7F", "includeInactive", @"False", "BBAA735B-888C-4CC5-8D1F-E42FF0D754A9");
             // Qualifier for attribute: Course
-            RockMigrationHelper.UpdateAttributeQualifier("D47DE59B-B3E2-476A-AAFF-C5722B466B7F", "AllowAddingNewValues", @"False", "46582775-415E-4E89-9E70-AEDAD38FF635");
+            RockMigrationHelper.UpdateAttributeQualifier("D47DE59B-B3E2-476A-AAFF-C5722B466B7F", "AllowAddingNewValues", @"True", "46582775-415E-4E89-9E70-AEDAD38FF635");
             // Qualifier for attribute: Course
             RockMigrationHelper.UpdateAttributeQualifier("D47DE59B-B3E2-476A-AAFF-C5722B466B7F", "RepeatColumns", @"", "6675502B-0C9B-46A4-9A7B-228F35A5DE29");
             // Qualifier for attribute: Location
@@ -723,16 +723,6 @@ VALUES
             //   Attribute: Success Page
             //   Attribute Value: 18e2c178-dd5d-4031-960a-71994057fde4
             RockMigrationHelper.AddBlockAttributeValue("985EBD06-AD2E-4FF5-8B1C-64C30710F91C", "1BC93D94-6AB0-438B-B2EB-F3A3681DABEB", @"18e2c178-dd5d-4031-960a-71994057fde4");
-
-
-            // Add Block Attribute Value
-            //   Block: Steps Timeline
-            //   BlockType: Steps Timeline
-            //   Block Location: Page=Timelines, Site=Rock RMS
-            //   Attribute: Step Entry Page
-            //   Attribute Value: 7a04966a-8e4e-49ea-a03c-7dd4b52a7b28
-            RockMigrationHelper.AddBlockAttributeValue("8995F48B-CEA0-439C-924C-ADF96ACC93CC", "5D341011-9CC5-46A5-9ED9-998FE874B743", @"7a04966a-8e4e-49ea-a03c-7dd4b52a7b28");
-
 
             /** Security Roles for Step Types **/
 

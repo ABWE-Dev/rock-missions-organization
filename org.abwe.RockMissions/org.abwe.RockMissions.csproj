@@ -43,6 +43,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Rock\RockWeb\Bin\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Data.Edm, Version=5.6.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Rock\RockWeb\Bin\Microsoft.Data.Edm.dll</HintPath>
@@ -64,13 +65,14 @@
     <Reference Include="System.Web.Http, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FieldType\ABWECampusGroupAndRoleFieldType.cs" />
+    <Compile Include="FieldType\InteractionChannelComponentsFieldType.cs" />
+    <Compile Include="FieldType\ABWEPersonAndFamilyFieldType.cs" />
     <Compile Include="Migrations\011_AreaRegionFieldGroups.cs" />
     <Compile Include="Migrations\014_DepartmentsAndGroups.cs" />
     <Compile Include="Migrations\015_EmploymentDepartmentAndSupervisor.cs" />
@@ -79,8 +81,10 @@
     <Compile Include="Migrations\013_StepTypes.cs" />
     <Compile Include="Migrations\010_AccountAssociations.cs" />
     <Compile Include="Migrations\009_ChurchGroup.cs" />
+    <Compile Include="Migrations\017_Interactions.cs" />
     <Compile Include="Migrations\016_ChurchPages.cs" />
     <Compile Include="Reporting\DataTransform\SendingChurchTransform.cs" />
+    <Compile Include="SystemGuid\InteractionComponent.cs" />
     <Compile Include="SystemGuid\Group.cs" />
     <Compile Include="SystemGuid\Category.cs" />
     <Compile Include="SystemGuid\FieldType.cs" />
@@ -104,11 +108,16 @@
     <Compile Include="SystemGuid\DefinedValue.cs" />
     <Compile Include="SystemGuid\FinancialAccounts.cs" />
     <Compile Include="UI\Control\Picker\ABWECampusGroupAndRolePicker.cs" />
+    <Compile Include="UI\Control\Picker\ABWEPersonAndFamilyPicker.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Model\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Rock\Rock.Lava.Shared\Rock.Lava.Shared.csproj">
+      <Project>{8820CD93-70EE-496D-B17B-0C4C68DD4957}</Project>
+      <Name>Rock.Lava.Shared</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Rock\Rock.Rest\Rock.Rest.csproj">
       <Project>{add1edd0-a4cb-4e82-b6ad-6ad1d556deae}</Project>
       <Name>Rock.Rest</Name>

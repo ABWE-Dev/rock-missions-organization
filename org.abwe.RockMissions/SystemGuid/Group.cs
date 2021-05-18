@@ -14,5 +14,6 @@ namespace org.abwe.RockMissions.SystemGuid
         public const string GROUP_TRAINING_WORKER = "e5f266ae-a3c0-423a-89c2-4eacbd059e7f";
         public const string GROUP_MISS_FINN_WORKER = "27eaa9af-4dda-45b4-bcb6-408a17d0fdee";
         public const string GROUP_MEDICAL_ADMIN = "f010f941-199e-43fa-9908-f2e1886743c3";
+        public const string GROUP_INTERACTION_WORKER = "f6593020-b6b9-45dd-9452-b40d1b829918";
     }
 }

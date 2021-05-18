@@ -405,10 +405,8 @@ namespace Rock.Web.UI.Controls
         protected void _ddlGroup_SelectedIndexChanged( object sender, EventArgs e )
         {
             int groupId = _ddlGroup.SelectedValue.AsInteger();
-
-            int groupTypeId = new GroupService(new RockContext()).Get(groupId).GroupTypeId;
             
-            LoadGroupsAndRoles( groupTypeId );
+            LoadGroupsAndRoles( groupId );
         }
 
         /// <summary>
@@ -446,7 +444,7 @@ namespace Rock.Web.UI.Controls
 
             _ddlGroupRole.SelectedValue = null;
             _ddlGroupRole.Items.Clear();
-            if ( groupId.HasValue )
+                if ( groupId.HasValue )
             {
                 var rockContext = new RockContext();
 

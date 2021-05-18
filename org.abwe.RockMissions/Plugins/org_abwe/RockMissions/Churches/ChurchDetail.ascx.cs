@@ -77,17 +77,22 @@ namespace RockWeb.Plugins.org_abwe.RockMissions
 
             if ( !Page.IsPostBack )
             {
-                int ChurchId = PageParameter("ChurchId").AsInteger();
-                if (ChurchId == 0)
+                int? ChurchId = PageParameter("ChurchId").AsIntegerOrNull();
+                // If there is not a church ID (which is a person ID) provided,
+                // check to see if there is a group ID for a church group provided and find the church
+                // in that church group. Allows us to use a GroupList block to link to a church page
+                if (ChurchId == null)
                 {
-                    int ChurchGroupId = PageParameter("GroupId").AsInteger();
+                    int? ChurchGroupId = PageParameter("GroupId").AsIntegerOrNull();
 
-                    if (ChurchGroupId == 0)
+                    if (ChurchGroupId == null)
                     {
-                        nbWarningMessage.Text = "No church found.";
+                        nbErrorMessage.Text = "No church found.";
+                        SetEditMode(true);
+                        pnlEditDetails.Visible = false;
                         return;
                     }
-
+                    
                     Guid ChurchRoleGuid = org.abwe.RockMissions.SystemGuid.GroupTypeRole.GROUPROLE_CHURCH.AsGuid();
                     ChurchId = new GroupMemberService(new RockContext()).Queryable()
                             .Where(gm => gm.GroupId == ChurchGroupId && gm.GroupRole.Guid == ChurchRoleGuid)
@@ -97,7 +102,9 @@ namespace RockWeb.Plugins.org_abwe.RockMissions
                     if (ChurchId == 0)
                     {
                         // TODO: Show an error if the group is not a church
-                        nbWarningMessage.Text = "This is not a church group";
+                        nbErrorMessage.Text = "This is not a church group";
+                        SetEditMode(true);
+                        pnlEditDetails.Visible = false;
                         return;
                     }
 
@@ -106,7 +113,7 @@ namespace RockWeb.Plugins.org_abwe.RockMissions
                     pageReference.Parameters.Remove("GroupId");
                     Response.Redirect(pageReference.BuildUrl(), false);
                 }
-                ShowDetail(ChurchId);
+                ShowDetail(ChurchId.Value);
             }
 
             if ( !string.IsNullOrWhiteSpace( hfModalOpen.Value ) )

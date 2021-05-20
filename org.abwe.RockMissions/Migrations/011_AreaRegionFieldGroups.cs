@@ -19,10 +19,16 @@ namespace org.abwe.RockMissions.Migrations
             RockMigrationHelper.AddGroupType("Team", "A missions organization operational team", "Team", "Member", false, true, true, "", 0, null, 0, null, SystemGuid.GroupType.GROUPTYPE_TEAM);
 
             // Area Roles
-            RockMigrationHelper.UpdateGroupTypeRole(SystemGuid.GroupType.GROUPTYPE_AREA, "Leader", "", 0, null, null, SystemGuid.GroupTypeRole.GROUPROLE_AREA_LEADER, true, true);
+            RockMigrationHelper.UpdateGroupTypeRole(SystemGuid.GroupType.GROUPTYPE_AREA, "Director", "", 0, null, null, SystemGuid.GroupTypeRole.GROUPROLE_AREA_LEADER, true, true);
+            RockMigrationHelper.UpdateGroupTypeRole(SystemGuid.GroupType.GROUPTYPE_AREA, "Missionary", "", 0, null, null, SystemGuid.GroupTypeRole.GROUPROLE_AREA_MISSIONARY);
+            RockMigrationHelper.UpdateGroupTypeRole(SystemGuid.GroupType.GROUPTYPE_AREA, "Applicant", "", 0, null, null, SystemGuid.GroupTypeRole.GROUPROLE_AREA_APPLICANT);
+            RockMigrationHelper.UpdateGroupTypeRole(SystemGuid.GroupType.GROUPTYPE_AREA, "Volunteer", "", 0, null, null, SystemGuid.GroupTypeRole.GROUPROLE_AREA_VOLUNTEER);
 
             // Region Roles
-            RockMigrationHelper.UpdateGroupTypeRole(SystemGuid.GroupType.GROUPTYPE_REGION, "Leader", "", 0, null, null, SystemGuid.GroupTypeRole.GROUPROLE_REGIONAL_LEADER, true, true);
+            RockMigrationHelper.UpdateGroupTypeRole(SystemGuid.GroupType.GROUPTYPE_REGION, "Director", "", 0, null, null, SystemGuid.GroupTypeRole.GROUPROLE_REGIONAL_LEADER, true, true);
+            RockMigrationHelper.UpdateGroupTypeRole(SystemGuid.GroupType.GROUPTYPE_REGION, "Missionary", "", 0, null, null, SystemGuid.GroupTypeRole.GROUPROLE_REGIONAL_MISSIONARY);
+            RockMigrationHelper.UpdateGroupTypeRole(SystemGuid.GroupType.GROUPTYPE_REGION, "Applicant", "", 0, null, null, SystemGuid.GroupTypeRole.GROUPROLE_REGIONAL_APPLICANT);
+            RockMigrationHelper.UpdateGroupTypeRole(SystemGuid.GroupType.GROUPTYPE_REGION, "Volunteer", "", 0, null, null, SystemGuid.GroupTypeRole.GROUPROLE_REGIONAL_VOLUNTEER);
 
             // Field Roles
             RockMigrationHelper.UpdateGroupTypeRole(SystemGuid.GroupType.GROUPTYPE_TEAM, "Leader", "", 0, null, null, SystemGuid.GroupTypeRole.GROUPROLE_FIELDTEAM_LEADER, true, true);

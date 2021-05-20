@@ -1,0 +1,16 @@
+.collapser {
+    color: black;
+    display: block;
+}
+.collapser:hover, .collapser:focus {
+    color: black;
+}
+.collapser i {
+    margin-right: 10px;
+}
+.collapser.collapsed i {
+    transform: rotate(-90deg);
+}
+.collapse+*:not(.collapser) {
+    margin-top: 15px;
+}

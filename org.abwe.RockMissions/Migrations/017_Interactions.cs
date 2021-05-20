@@ -286,7 +286,7 @@ namespace org.abwe.RockMissions.Migrations
             RockMigrationHelper.AddPageRoute("7796B670-CA8D-4DDA-AF36-1AF036E5A2AE", "Person/{PersonId}/Interactions/{InteractionId}", "73019ED2-39B8-42B9-AC11-FE75F10661B3");
 
             // Add Block Interaction Detail to Page: Interaction Details, Site: Rock RMS
-            RockMigrationHelper.AddBlock(true, "7796B670-CA8D-4DDA-AF36-1AF036E5A2AE".AsGuid(), null, "C2D29296-6A87-47A9-A753-EE4E9159C4C4".AsGuid(), "B6AD2D98-0DF3-4DFB-AE2B-A8CF6E21E5C0".AsGuid(), "Interaction Detail", "SubNavigation", @"", @"", 0, "A50A7A10-E689-443D-B166-973153B7B891");
+            RockMigrationHelper.AddBlock(true, "7796B670-CA8D-4DDA-AF36-1AF036E5A2AE".AsGuid(), null, "C2D29296-6A87-47A9-A753-EE4E9159C4C4".AsGuid(), "B6AD2D98-0DF3-4DFB-AE2B-A8CF6E21E5C0".AsGuid(), "Interaction Detail", "Main", @"", @"", 0, "A50A7A10-E689-443D-B166-973153B7B891");
 
 
             // Add Block Attribute Value

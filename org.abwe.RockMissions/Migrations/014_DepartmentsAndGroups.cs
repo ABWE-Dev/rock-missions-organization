@@ -32,24 +32,6 @@ namespace org.abwe.RockMissions.Migrations
             RockMigrationHelper.AddGroupTypeRole(SystemGuid.GroupType.GROUPTYPE_MISSIONARIES, "Missionary", "", 0, null, null, "f32abb84-991c-4cc1-9375-b404d2916d34");
             Sql(@"UPDATE [GroupType] SET [AllowAnyChildGroupType] = 1 WHERE [Guid] = '" + SystemGuid.GroupType.GROUPTYPE_DEPARTMENT + "'");
 
-            // Entity: Rock.Model.Group Attribute: Department
-            RockMigrationHelper.AddGroupTypeGroupAttribute("39A89FD9-27F0-469F-9F8D-8CC362454C9B", "59D5A94C-94A0-4630-B80A-BB25697D74C7", "Department", @"", 0, "", "283C606C-C2A7-4FF8-B245-81AC5B900129", "Department");
-            // Qualifier for attribute: Department
-            RockMigrationHelper.UpdateAttributeQualifier("283C606C-C2A7-4FF8-B245-81AC5B900129", "AllowAddingNewValues", @"False", "B0B092E3-0A38-4ED8-BC81-42761A41951F");
-            // Qualifier for attribute: Department
-            RockMigrationHelper.UpdateAttributeQualifier("283C606C-C2A7-4FF8-B245-81AC5B900129", "allowmultiple", @"False", "A8349D84-7435-4DCC-8318-E0F76194A640");
-            // Qualifier for attribute: Department
-            RockMigrationHelper.UpdateAttributeQualifier("283C606C-C2A7-4FF8-B245-81AC5B900129", "definedtype", SqlScalar("SELECT [Id] FROM [DefinedType] WHERE [Guid] = '"+SystemGuid.DefinedType.DEPARTMENTS+"'").ToString(), "FADFBC21-C7D1-45F5-A133-0B48B0E29CC0");
-            // Qualifier for attribute: Department
-            RockMigrationHelper.UpdateAttributeQualifier("283C606C-C2A7-4FF8-B245-81AC5B900129", "displaydescription", @"False", "A8E71DDE-AC44-4CB5-B268-4EA1848C4D4C");
-            // Qualifier for attribute: Department
-            RockMigrationHelper.UpdateAttributeQualifier("283C606C-C2A7-4FF8-B245-81AC5B900129", "enhancedselection", @"True", "3AB62926-F08C-4F0A-9BCD-29D6ACA0C84C");
-            // Qualifier for attribute: Department
-            RockMigrationHelper.UpdateAttributeQualifier("283C606C-C2A7-4FF8-B245-81AC5B900129", "includeInactive", @"False", "3310F931-DCCB-4D9D-9868-AA51335D51F8");
-            // Qualifier for attribute: Department
-            RockMigrationHelper.UpdateAttributeQualifier("283C606C-C2A7-4FF8-B245-81AC5B900129", "RepeatColumns", @"", "CEC88364-CA22-44DB-AA8A-893FD3FBC68C");
-
-
             // Allow child groups of the same type
             Sql($@"INSERT [GroupTypeAssociation]
 	            ([GroupTypeId], [ChildGroupTypeId])

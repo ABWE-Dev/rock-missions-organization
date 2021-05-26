@@ -242,7 +242,7 @@ INSERT INTO [dbo].[StepStatus]
                ,NEWID()
            ),
            (
-               'Transitioned'
+               'Transferred'
                ,(SELECT Id FROM StepProgram WHERE [Guid] = '59c990ed-f5b4-4379-a926-852cba08fa03') -- Career
                ,1
                ,''

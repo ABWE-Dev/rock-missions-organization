@@ -17,13 +17,21 @@ namespace org.abwe.RockMissions.Migrations
     {
         public override void Up()
         {
-            RockMigrationHelper.AddSecurityRoleGroup("MSO - Interaction Worker", "People who can view all interactions", SystemGuid.Group.GROUP_INTERACTION_WORKER);
+            object securityRoleGroupId = SqlScalar("SELECT [Id] FROM [Group] WHERE [Guid] = 'f6593020-b6b9-45dd-9452-b40d1b829918'");
+            if (securityRoleGroupId == null)
+            {
+                RockMigrationHelper.AddSecurityRoleGroup("MSO - Interaction Worker", "People who can view all interactions", SystemGuid.Group.GROUP_INTERACTION_WORKER);
+            }
 
             RockMigrationHelper.UpdateFieldType("ABWE Person And Family", "", "org.abwe.RockMissions", "org.abwe.RockMissions.Field.Types.ABWEPersonAndFamilyFieldType", SystemGuid.FieldType.FIELD_TYPE_PERSON_AND_FAMILY);
             RockMigrationHelper.UpdateFieldType("Interaction Channel Components", "", "org.abwe.RockMissions", "org.abwe.RockMissions.Field.Types.InteractionChannelComponentsFieldType", SystemGuid.FieldType.FIELD_TYPE_INTERACTION_CHANNEL_COMPONENTS);
 
             // Add new "Contacts" interaction channel and one "General" component
             Sql(@"
+                DECLARE @Id int
+                SET @Id = (SELECT [Id] FROM [InteractionChannel] WHERE [Guid] = 'D1853AE1-145F-4AE1-84CF-E7F62024B121')
+                IF @Id IS NULL
+                BEGIN
                 INSERT INTO [dbo].[InteractionChannel]
                        ([Name]
                        ,[InteractionEntityTypeId]
@@ -40,7 +48,11 @@ namespace org.abwe.RockMissions.Migrations
                        ,GETDATE()
                        ,'D1853AE1-145F-4AE1-84CF-E7F62024B121'
                        ,1)
+                END
 
+            SET @Id = (SELECT [Id] FROM [InteractionComponent] WHERE [Guid] = '41D3B3BC-E03C-4282-871A-0FC87AD12982')
+            IF @Id IS NULL
+            BEGIN
             INSERT INTO [dbo].InteractionComponent
 	            ([Name]
 	            ,InteractionChannelId
@@ -53,6 +65,7 @@ namespace org.abwe.RockMissions.Migrations
 	            ,GETDATE()
 	            ,GETDATE()
 	            ,'41D3B3BC-E03C-4282-871A-0FC87AD12982')
+            END
             ");
 
             // Add category for interactions

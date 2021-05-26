@@ -81,6 +81,7 @@
     <Compile Include="Migrations\013_StepTypes.cs" />
     <Compile Include="Migrations\010_AccountAssociations.cs" />
     <Compile Include="Migrations\009_ChurchGroup.cs" />
+    <Compile Include="Migrations\019_Badges.cs" />
     <Compile Include="Migrations\018_FinancialSubaccountsAndPledges.cs" />
     <Compile Include="Migrations\017_Interactions.cs" />
     <Compile Include="Migrations\016_ChurchPages.cs" />

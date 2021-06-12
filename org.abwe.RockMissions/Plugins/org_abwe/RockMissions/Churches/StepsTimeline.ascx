@@ -247,10 +247,9 @@
                         on_click: function (task) {
                             console.log(task);
                             __doPostBack('LoadStepDetails', task.data.StepType.Id + ',' + task.data.Id);
-                        }
+                        },
+                        view_mode: 'Year'
                     });
-
-                    gantt.change_view_mode('Year');
                 });
 
 

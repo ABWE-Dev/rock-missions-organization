@@ -74,9 +74,33 @@ namespace org.abwe.RockMissions.Migrations
             string BadgeDataViewAttribute = SqlScalar(@"DECLARE @InDataViewComponentId int = (SELECT [Id] FROM [EntityType] WHERE [name] = 'Rock.Badge.Component.InDataView')
             DECLARE @DataViewAttributeGuid uniqueidentifier = (SELECT [Guid] FROM [Attribute] WHERE [Key] = 'DataView' AND [EntityTypeQualifierColumn] = 'BadgeComponentEntityTypeId' AND [EntityTypeQualifierValue] = @InDataViewComponentId)
             SELECT @DataViewAttributeGuid").ToString();
+            if (BadgeDataViewAttribute == "")
+            {
+                // Entity: Rock.Model.Badge Attribute: Data View
+                RockMigrationHelper.AddOrUpdateEntityAttribute("Rock.Model.Badge", "BD72BBF1-0269-407E-BDBE-EEED4F1F207F", "BadgeComponentEntityTypeId", SqlScalar("SELECT [Id] FROM [EntityType] WHERE [name] = 'Rock.Badge.Component.InDataView'").ToString(), "Data View", "Data View", @"The dataview to use as the source for the query. Only those people in the DataView will be given the badge.", 0, @"", "E34BA934-FF7E-4E94-A0C2-BEAFB1086C0D", "DataView");
+
+                // Qualifier for attribute: DataView
+                RockMigrationHelper.UpdateAttributeQualifier("E34BA934-FF7E-4E94-A0C2-BEAFB1086C0D", "entityTypeName", @"Rock.Model.Person", "2E139A56-DECD-407F-95CC-0DCF3D05B05F");
+
+                BadgeDataViewAttribute = "E34BA934-FF7E-4E94-A0C2-BEAFB1086C0D";
+            }
             string BadgeContentAttribute = SqlScalar(@"DECLARE @InDataViewComponentId int = (SELECT [Id] FROM [EntityType] WHERE [name] = 'Rock.Badge.Component.InDataView')
             DECLARE @BadgeContentAttributeGuid uniqueidentifier = (SELECT [Guid] FROM [Attribute] WHERE [Key] = 'BadgeContent' AND [EntityTypeQualifierColumn] = 'BadgeComponentEntityTypeId' AND [EntityTypeQualifierValue] = @InDataViewComponentId)
             SELECT @BadgeContentAttributeGuid").ToString();
+            if (BadgeContentAttribute == "")
+            {
+                // Entity: Rock.Model.Badge Attribute: Badge Content
+                RockMigrationHelper.AddOrUpdateEntityAttribute("Rock.Model.Badge", "1D0D3794-C210-48A8-8C68-3FBEC08A6BA5", "BadgeComponentEntityTypeId", SqlScalar("SELECT [Id] FROM [EntityType] WHERE [name] = 'Rock.Badge.Component.InDataView'").ToString(), "Badge Content", "Badge Content", @"", 1, @"<span class='label label-danger'>Alert Note Exists</span>", "2BE01489-93D2-4271-9444-58242D06FCE6", "BadgeContent");
+                // Qualifier for attribute: BadgeContent
+                RockMigrationHelper.UpdateAttributeQualifier("2BE01489-93D2-4271-9444-58242D06FCE6", "editorHeight", @"200", "ABF5CC6F-F65E-4984-AC90-4DE6912C3207");
+                // Qualifier for attribute: BadgeContent
+                RockMigrationHelper.UpdateAttributeQualifier("2BE01489-93D2-4271-9444-58242D06FCE6", "editorMode", @"Lava", "F7AAE5AE-31C4-4ECD-A3D7-40766846085F");
+                // Qualifier for attribute: BadgeContent
+                RockMigrationHelper.UpdateAttributeQualifier("2BE01489-93D2-4271-9444-58242D06FCE6", "editorTheme", @"Rock", "37890690-5728-47FE-98C9-07D3C9B0C192");
+
+                BadgeContentAttribute = "2BE01489-93D2-4271-9444-58242D06FCE6";
+            }
+
             RockMigrationHelper.AddOrUpdateBadge("Missionary Status", "Indicate the status of a missionary", "Rock.Model.Person", "Rock.Badge.Component.InDataView", 0, "5E44BA37-2131-4518-A502-FCF1543D3348");
             RockMigrationHelper.AddBadgeAttributeValue("5E44BA37-2131-4518-A502-FCF1543D3348", BadgeDataViewAttribute, "1b2bf8b1-f01f-4134-b36a-79e7d5884e23");
             RockMigrationHelper.AddBadgeAttributeValue("5E44BA37-2131-4518-A502-FCF1543D3348", BadgeContentAttribute, "{[ missionarystatus aliasid:'{{Person.PrimaryAliasId}}' ]}");

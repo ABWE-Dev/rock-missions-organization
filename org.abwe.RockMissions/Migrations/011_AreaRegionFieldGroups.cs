@@ -30,7 +30,7 @@ namespace org.abwe.RockMissions.Migrations
             RockMigrationHelper.UpdateGroupTypeRole(SystemGuid.GroupType.GROUPTYPE_REGION, "Applicant", "", 0, null, null, SystemGuid.GroupTypeRole.GROUPROLE_REGIONAL_APPLICANT);
             RockMigrationHelper.UpdateGroupTypeRole(SystemGuid.GroupType.GROUPTYPE_REGION, "Volunteer", "", 0, null, null, SystemGuid.GroupTypeRole.GROUPROLE_REGIONAL_VOLUNTEER);
 
-            // Field Roles
+            // Team Roles
             RockMigrationHelper.UpdateGroupTypeRole(SystemGuid.GroupType.GROUPTYPE_TEAM, "Leader", "", 0, null, null, SystemGuid.GroupTypeRole.GROUPROLE_FIELDTEAM_LEADER, true, true);
             RockMigrationHelper.UpdateGroupTypeRole(SystemGuid.GroupType.GROUPTYPE_TEAM, "Missionary", "",0,null, null, SystemGuid.GroupTypeRole.GROUPROLE_MISSIONARY);
             RockMigrationHelper.UpdateGroupTypeRole(SystemGuid.GroupType.GROUPTYPE_TEAM, "Volunteer", "", 0, null, null, SystemGuid.GroupTypeRole.GROUPROLE_VOLUNTEER);

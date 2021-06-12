@@ -17,16 +17,16 @@ namespace org.abwe.RockMissions.Migrations
             RockMigrationHelper.AddDefinedType("Communication", "Communication Risk", "Level of caution regarding communication with a specific set of people or with people in a country", "A4EFF1B9-E66E-4197-BCCD-104423399580", @"");
             RockMigrationHelper.AddDefinedTypeAttribute("A4EFF1B9-E66E-4197-BCCD-104423399580", "D747E6AE-C383-4E22-8846-71518E3DD06F", "Color Level", "ColorLevel", "", 31055, "", "F891981B-42D1-4878-A2B6-04C5C43052E9");
             RockMigrationHelper.AddAttributeQualifier("F891981B-42D1-4878-A2B6-04C5C43052E9", "selectiontype", "Color Picker", "6906DDE8-51F3-4DAE-A2B1-726087152A01");
-            RockMigrationHelper.UpdateDefinedValue("A4EFF1B9-E66E-4197-BCCD-104423399580", "Cautious", "", "E6BE261D-C535-49A7-ABA7-8CC394FD6380", false);
-            RockMigrationHelper.UpdateDefinedValue("A4EFF1B9-E66E-4197-BCCD-104423399580", "Emergency Only", "", "FE7C4D6A-C374-4244-A694-C43E89DC24FA", false);
-            RockMigrationHelper.UpdateDefinedValue("A4EFF1B9-E66E-4197-BCCD-104423399580", "Open", "", "97F40A46-E6C2-40CD-BB34-B8BEFA344CBF", false);
-            RockMigrationHelper.UpdateDefinedValue("A4EFF1B9-E66E-4197-BCCD-104423399580", "Restricted", "", "0E26F1A7-B90D-4A29-BB98-6D51FEC43F96", false);
-            RockMigrationHelper.UpdateDefinedValue("A4EFF1B9-E66E-4197-BCCD-104423399580", "Unknown", "", "8419D758-5E7B-49A6-A270-6F101DAA129E", false);
-            RockMigrationHelper.AddDefinedValueAttributeValue("0E26F1A7-B90D-4A29-BB98-6D51FEC43F96", "F891981B-42D1-4878-A2B6-04C5C43052E9", @"#f5af19");
-            RockMigrationHelper.AddDefinedValueAttributeValue("8419D758-5E7B-49A6-A270-6F101DAA129E", "F891981B-42D1-4878-A2B6-04C5C43052E9", @"#878787");
-            RockMigrationHelper.AddDefinedValueAttributeValue("97F40A46-E6C2-40CD-BB34-B8BEFA344CBF", "F891981B-42D1-4878-A2B6-04C5C43052E9", @"#25bf2c");
-            RockMigrationHelper.AddDefinedValueAttributeValue("E6BE261D-C535-49A7-ABA7-8CC394FD6380", "F891981B-42D1-4878-A2B6-04C5C43052E9", @"#dbce5b");
-            RockMigrationHelper.AddDefinedValueAttributeValue("FE7C4D6A-C374-4244-A694-C43E89DC24FA", "F891981B-42D1-4878-A2B6-04C5C43052E9", @"#bf1301");
+            RockMigrationHelper.UpdateDefinedValue("A4EFF1B9-E66E-4197-BCCD-104423399580", "3", "Cautious", "E6BE261D-C535-49A7-ABA7-8CC394FD6380", false);
+            RockMigrationHelper.UpdateDefinedValue("A4EFF1B9-E66E-4197-BCCD-104423399580", "5", "Emergency Only", "FE7C4D6A-C374-4244-A694-C43E89DC24FA", false);
+            RockMigrationHelper.UpdateDefinedValue("A4EFF1B9-E66E-4197-BCCD-104423399580", "2", "Open", "97F40A46-E6C2-40CD-BB34-B8BEFA344CBF", false);
+            RockMigrationHelper.UpdateDefinedValue("A4EFF1B9-E66E-4197-BCCD-104423399580", "4", "Restricted", "0E26F1A7-B90D-4A29-BB98-6D51FEC43F96", false);
+            RockMigrationHelper.UpdateDefinedValue("A4EFF1B9-E66E-4197-BCCD-104423399580", "1", "Unknown", "8419D758-5E7B-49A6-A270-6F101DAA129E", false);
+            RockMigrationHelper.AddDefinedValueAttributeValue("0E26F1A7-B90D-4A29-BB98-6D51FEC43F96", "F891981B-42D1-4878-A2B6-04C5C43052E9", @"#ee7624"); // Restricted
+            RockMigrationHelper.AddDefinedValueAttributeValue("8419D758-5E7B-49A6-A270-6F101DAA129E", "F891981B-42D1-4878-A2B6-04C5C43052E9", @"#efefef"); // Unkown
+            RockMigrationHelper.AddDefinedValueAttributeValue("97F40A46-E6C2-40CD-BB34-B8BEFA344CBF", "F891981B-42D1-4878-A2B6-04C5C43052E9", @"#16c98d"); // Open
+            RockMigrationHelper.AddDefinedValueAttributeValue("E6BE261D-C535-49A7-ABA7-8CC394FD6380", "F891981B-42D1-4878-A2B6-04C5C43052E9", @"#ffc870"); // Cautious
+            RockMigrationHelper.AddDefinedValueAttributeValue("FE7C4D6A-C374-4244-A694-C43E89DC24FA", "F891981B-42D1-4878-A2B6-04C5C43052E9", @"#d4442e"); // Emergency Only
 
             RockMigrationHelper.DeleteAttribute("6EABAD73-BF96-4F2E-AE3E-664832360FC2"); // DELETE Old Communication Risk
             RockMigrationHelper.AddDefinedTypeAttribute("D7979EA1-44E9-46E2-BF37-DDAF7F741378", "59D5A94C-94A0-4630-B80A-BB25697D74C7",
@@ -35,7 +35,7 @@ namespace org.abwe.RockMissions.Migrations
             RockMigrationHelper.AddAttributeQualifier("68AA097F-EF77-45F4-9791-653A78A551A3", "AllowAddingNewValues", "False", "3DF6B2C5-58DB-43DD-ADC2-79BE668277C3");
             RockMigrationHelper.AddAttributeQualifier("68AA097F-EF77-45F4-9791-653A78A551A3", "allowmultiple", "False", "0FC3038D-2F41-4ACA-850C-989BB02C28C8");
             RockMigrationHelper.AddAttributeQualifier("68AA097F-EF77-45F4-9791-653A78A551A3", "definedtype", "98", "B9B583B9-8F4B-45FD-B8E7-F4D7EB34ED24");
-            RockMigrationHelper.AddAttributeQualifier("68AA097F-EF77-45F4-9791-653A78A551A3", "displaydescription", "False", "E73299DD-5154-4B02-8E71-7077E06B1E22");
+            RockMigrationHelper.AddAttributeQualifier("68AA097F-EF77-45F4-9791-653A78A551A3", "displaydescription", "True", "E73299DD-5154-4B02-8E71-7077E06B1E22");
             RockMigrationHelper.AddAttributeQualifier("68AA097F-EF77-45F4-9791-653A78A551A3", "enhancedselection", "False", "FC9CB144-3F03-420B-B971-7880DC7BDA40");
             RockMigrationHelper.AddAttributeQualifier("68AA097F-EF77-45F4-9791-653A78A551A3", "includeInactive", "False", "4B744284-088E-43D3-9286-E9B0DA6DA79E");
             RockMigrationHelper.AddAttributeQualifier("68AA097F-EF77-45F4-9791-653A78A551A3", "RepeatColumns", "", "0683D070-D6B9-437D-9045-350745C7F301");

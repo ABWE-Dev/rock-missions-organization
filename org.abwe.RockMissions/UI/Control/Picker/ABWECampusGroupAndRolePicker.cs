@@ -377,8 +377,7 @@ namespace Rock.Web.UI.Controls
             var groupTypeIds = GroupTypeCache.All().Where(gt => gt.Guid == org.abwe.RockMissions.SystemGuid.GroupType.GROUPTYPE_AREA.AsGuid()
                 || gt.Guid == org.abwe.RockMissions.SystemGuid.GroupType.GROUPTYPE_REGION.AsGuid()
                 || gt.Guid == org.abwe.RockMissions.SystemGuid.GroupType.GROUPTYPE_TEAM.AsGuid()
-                || gt.Guid == org.abwe.RockMissions.SystemGuid.GroupType.GROUPTYPE_DEPARTMENT.AsGuid()
-                || gt.Guid == org.abwe.RockMissions.SystemGuid.GroupType.GROUPTYPE_MISSIONARIES.AsGuid() ).Select(gt => gt.Id).ToList();
+                || gt.Guid == org.abwe.RockMissions.SystemGuid.GroupType.GROUPTYPE_DEPARTMENT.AsGuid() ).Select(gt => gt.Id).ToList();
             _ddlGroup.IncludedGroupTypeIds = groupTypeIds;
             _ddlGroup.Required = true;
             

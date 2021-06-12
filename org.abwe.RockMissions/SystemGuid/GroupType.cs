@@ -19,5 +19,6 @@ namespace org.abwe.RockMissions.SystemGuid
         public const string GROUPTYPE_VOLUNTEERS = "0b7f9e92-1ea0-48e1-ab5c-6b89a575ca8e";
         public const string GROUPTYPE_APPLICANTS = "d216b5dd-0cd8-492f-bd9e-af7a53b0ede7";
         public const string GROUPTYPE_MISSIONARIES = "b1602ac6-7f14-4ac2-88ca-ebfa780d3c38";
+        public const string GROUPTYPE_STAFF = "ff27b3ab-4868-4bf1-8f11-e4ad9abc7739";
     }
 }

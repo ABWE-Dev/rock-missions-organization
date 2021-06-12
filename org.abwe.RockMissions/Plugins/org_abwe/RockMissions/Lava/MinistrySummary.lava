@@ -1,0 +1,143 @@
+{% assign person = PageParameter['PersonId'] | PersonById %}
+
+{% if person.ConnectionStatusValue.Value == "Missionary" %}
+
+{% grouptype where:'Guid == "A14BA4F7-801D-4934-AE7B-ECF532F24A6F" || Guid == "E6E87D4D-9108-495B-A4F5-EDA30AACD54F" || Guid == "61C0C238-8789-4236-ABB6-92B92A0B2CB6"' %}
+    {% assign groupTypes = grouptypeItems | Select:'Id' %}
+{% endgrouptype %}
+
+{% if groupTypes != "" %}
+    <header style="position: relative;
+        padding: 10px 15px;
+        margin: 0 -15px;
+        background-color: #fff;
+        border-top: 1px solid #e6e6e6;
+        border-bottom: 1px solid #e6e6e6;">
+        <h1 style="
+        margin: 0;
+        font-size: 18px;
+        font-weight: 600;
+        line-height: 25px;">Ministry Summary</h1>
+    </header>
+    <div class="row" style="padding: 10px 0px;">
+        {% assign summary = person.PrimaryFamily | Attribute:'MinistrySummary' %}
+        {% assign livesIn = person.PrimaryFamily | Attribute:'LivesIn','Object' %}
+        {% assign servesIn = person.PrimaryFamily | Attribute:'ServesIn','Object' %}
+        {% assign familySecurityOverride = person.PrimaryFamily | Attribute:'SecurityOverride','Object' %}
+        {% assign livesInCovered = false %}
+
+        {% if summary != empty %}
+        <div class="left col-xs-12 col-sm-5">
+            <p>{{ summary }}</p>
+        </div>
+        {% endif %}
+        <div class="right col-xs-12 col-sm-7">
+            {% if familySecurityOverride != "" %}
+                <div style="background-color: {{ familySecurityOverride | Attribute:'ColorLevel' }};color: white; padding: 5px 10px;margin-bottom: 15px;border-radius: 10px;"><i class="far fa-exclamation-triangle" style="margin-right: 5px;"></i> Family Security Override: {{ familySecurityOverride.Description }}</div>
+            {% endif %}
+
+            <div style="display: flex; flex-wrap: wrap; align-items: center; width: 100%;">
+            {% for groupType in groupTypes %}
+                {% assign groupTypeId = groupType | AsString %}
+                {% assign teams = person | Groups:{{groupTypeId}} %}
+                {% for field in teams %}
+                    {% assign teamCountry = field.Group | Attribute:'Country','Object' %}
+                    {% assign communicationRisk = teamCountry | Attribute:'CommunicationRisk','Object' %}
+                    {% assign crOverride = field.Group | Attribute:'CommunicationRiskOverride','Object' %}
+
+                    {% if crOverride != "" %}
+                        {% assign communicationRisk = crOverride %}
+                    {% endif %}
+
+                    {% if familySecurityOverride != "" %}
+                        {% assign communicationRisk = '' %}
+                    {% endif %}
+
+                    {% if communicationRisk != "" and communicationRisk != 'Unknown' and communicationRisk.Description != 'Unknown' %}
+                        {% assign backgroundClass = 'text-white' %}
+                    {% else %}
+                        {% assign backgroundClass = '' %}
+                    {% endif %}
+
+                    <div class="{{backgroundClass}}" style="background-color: #efefef; background-color: {{communicationRisk | Attribute:'ColorLevel'}}; border-radius: 15px;padding: 15px 20px; margin-bottom: 15px; display: flex;align-items: center;margin-right: 25px;">
+                        <div style="padding-right: 10px;">
+                            {% if livesIn != "" and livesIn.Description == teamCountry.Description %}
+                                {% assign livesInCovered = true %}
+                                <i class="far fa-home fa-2x"></i>
+                            {% else %}
+                                <i class="far fa-seedling fa-2x" style="vertical-align: middle;"></i>
+                            {% endif %}
+                        </div>
+                        <div style="line-height: .8em;">
+                            <div style="line-height: 1em;"><b>{{ field.Group.Name }}</b></div>
+                            <div style="font-size: .75em;">{{ field.GroupRole.Name }}</div>
+                            <div style="font-size: .65em;">Since {{ field.CreatedDateTime | Date:'yyyy' }}</div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+
+            {% if livesInCovered == false and livesIn != "" %}
+                {% assign communicationRisk = livesIn | Attribute:'CommunicationRisk','Object' %}
+
+                {% if familySecurityOverride != "" %}
+                    {% assign communicationRisk = '' %}
+                {% endif %}
+
+                {% if communicationRisk != "" and communicationRisk.Value != 'Unknown' %}
+                    {% assign backgroundClass = 'text-white' %}
+                {% else %}
+                    {% assign backgroundClass = '' %}
+                {% endif %}
+
+                <div class="{{backgroundClass}}" style="background-color: #efefef; background-color: {{communicationRisk | Attribute:'ColorLevel'}}; border-radius: 15px;padding: 15px 20px; margin-bottom: 15px; display: flex;align-items: center;margin-right: 25px;min-height: 4.4em;">
+                        <div style="padding-right: 10px;">
+                            <i class="far fa-home fa-2x"></i>
+                        </div>
+                        <div style="line-height: .8em;">
+                            <div style="font-size: .65em;">Lives In</div>
+                            <div style="line-height: 1em;"><b>{{ livesIn.Description }}</b></div>
+                        </div>
+                    </div>
+            {% endif %}
+
+            {% if servesIn != empty %}
+                {% assign maxCommunicationRisk = 'Unknown' %}
+                {% assign maxCommunicationRiskNumber = 0 %}
+
+                {% for country in servesIn %}
+                    {% assign risk = country | Attribute:'CommunicationRisk','Object' %}
+
+                    {% if risk.Value > maxCommunicationRiskNumber %}
+                        {% assign maxCommunicationRisk = risk.Description %}
+                        {% assign maxCommunicationRiskNumber = risk.Value %}
+                    {% endif %}
+                {% endfor %}
+
+                {% if maxCommunicationRisk != "" and maxCommunicationRisk != "Unknown" and maxCommunicationRisk.Value != 'Description' %}
+                    {% assign backgroundClass = 'text-white' %}
+                {% else %}
+                    {% assign backgroundClass = '' %}
+                {% endif %}
+
+                {% if familySecurityOverride != "" %}
+                    {% assign backgroundClass = '' %}
+                {% endif %}
+
+                <div class="{{backgroundClass}}" style="background-color: #efefef; background-color: {{maxCommunicationRisk | Attribute:'ColorLevel'}}; border-radius: 15px;padding: 15px 20px; margin-bottom: 15px; display: flex;align-items: center;margin-right: 25px;">
+                        <div style="padding-right: 10px;">
+                            <i class="far fa-seedling fa-2x"></i>
+                        </div>
+                        <div style="line-height: .8em;">
+                            <div style="font-size: .65em;">Serves in</div>
+                            <div style="line-height: 1em;"><b>{{ maxCommunicationRisk }}</b></div>
+                            <div style="font-size: .65em;">communication areas</div>
+                        </div>
+                    </div>
+            {% endif %}
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+{% endif %}

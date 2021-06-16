@@ -1,0 +1,15 @@
+{% assign person = personid | PersonById %}
+
+{% assign ggfDonor = person | Attribute:'GlobalGospelFundDonor' %}
+{% assign givingTotal = person | Attribute:'12MonthGivingTotal','RawValue' | Default:'0' %}
+{% assign prevGivingTotal = person | Attribute:'Previous12MonthGivingTotal', 'RawValue' | Default:'0' %}
+
+<div class="badge" style="background-color: #efefef;color: black;padding: 10px;">{{ person | Attribute:'Percentile' | Default:'0' }} <i class="fa fa-star" style="color: gold;"></i></div>
+<div class="badge" style="background-color: #efefef;color: black;padding: 10px;">{{ person | Attribute:'MissionaryAccountsSupported' | Default:'0' }} <i class="fa fa-group"></i></div>
+<div class="badge" style="background-color: #efefef;color: black;padding: 10px;">{{ person | Attribute:'ProjectAccountsSupported' | Default:'0' }} <i class= "fa fa-hammer"></i></div>
+<div class="badge" style="background-color: #efefef;color: black;padding: 10px;" title="Prev: {{prevGivingTotal | FormatAsCurrency}}">{{ givingTotal | FormatAsCurrency }}
+{% if givingTotal > prevGivingTotal %}<i class="text-success fa fa-caret-square-up"></i>{% else %}<i class="text-danger fa fa-caret-square-down"></i>{% endif %}</div>
+
+{% if ggfDonor == "Yes" %}
+<div class='badge' style="padding: 10px;color: black;background-color: #efefef;"><i class="fas fa-globe-americas" style="color: green;"></i> Global Gospel </div>
+{% endif %}

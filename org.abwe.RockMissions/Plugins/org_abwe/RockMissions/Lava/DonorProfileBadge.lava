@@ -1,0 +1,47 @@
+{% sql %}
+DECLARE @MissionaryAccountId int = (SELECT [Id] FROM [DefinedValue] WHERE [Guid] = '53329569-5097-4975-BDFE-AD7A6CE920F9')
+DECLARE @ProjectAccountId int = (SELECT [Id] FROM [DefinedValue] WHERE [Guid] = 'FB0507A0-4D30-41D6-98E1-A48BC9F35967')
+
+SELECT
+    COUNT(FinancialTransaction.Id) [Count]
+    ,COUNT(DISTINCT CASE
+        WHEN FinancialAccount.AccountTypeValueId = @MissionaryAccountId AND DATEDIFF(dd,TransactionDateTime,GETDATE()) <= 365 THEN FinancialAccount.Id
+        WHEN FinancialAccount.AccountTypeValueId = @MissionaryAccountId AND DATEDIFF(dd,TransactionDateTime,GETDATE()) <= 365 THEN FinancialAccount.ParentAccountId
+        ELSE NULL
+    END) [MissionaryAccounts]
+    ,COUNT(DISTINCT CASE
+        WHEN FinancialAccount.AccountTypeValueId = @ProjectAccountId AND DATEDIFF(dd,TransactionDateTime,GETDATE()) <= 365 THEN FinancialAccount.Id
+        WHEN FinancialAccount.AccountTypeValueId = @ProjectAccountId AND DATEDIFF(dd,TransactionDateTime,GETDATE()) <= 365 THEN FinancialAccount.ParentAccountId
+        ELSE NULL
+    END) [ProjectAccounts]
+    ,ISNULL(SUM(CASE
+        WHEN DATEDIFF(dd,TransactionDateTime,GETDATE()) <= 365 THEN [FinancialTransactionDetail].[Amount]
+        ELSE 0
+     END),0) [ThisYTD]
+    ,ISNULL(SUM(CASE
+        WHEN DATEDIFF(dd,TransactionDateTime,GETDATE()) > 365 THEN [FinancialTransactionDetail].[Amount]
+        ELSE 0
+     END),0) [LastYTD]
+FROM
+FinancialTransactionDetail
+INNER JOIN [FinancialTransaction] ON [FinancialTransactionDetail].[TransactionId] = FinancialTransaction.Id
+INNER JOIN [FinancialAccount] ON [FinancialTransactionDetail].[AccountId] = FinancialAccount.Id
+WHERE AuthorizedPersonAliasId IN (SELECT Id FROM PersonAlias WHERE PersonId IN (SELECT [Id] FROM Person WHERE GivingId = (SELECT [GivingId] FROM Person WHERE Id = {{ personid }})))
+    AND (
+        DATEDIFF(dd,TransactionDateTime,GETDATE()) <= 730
+    )
+{% endsql %}
+
+{% assign person = personid | PersonById %}
+{% assign result = results | First %}
+
+<div class="badge" style="background-color: #efefef;color: black;padding: 10px;">{{ person | Attribute:'GivingPercentile' | Default:'0' }} <i class="fa fa-star" style="color: gold;"></i></div>
+<div class="badge" style="background-color: #efefef;color: black;padding: 10px;">{{ result.MissionaryAccounts }} <i class="fa fa-group"></i></div>
+<div class="badge" style="background-color: #efefef;color: black;padding: 10px;">{{ result.ProjectAccounts }} <i class= "fa fa-hammer"></i></div>
+<div class="badge" style="background-color: #efefef;color: black;padding: 10px;">{{ result.ThisYTD | FormatAsCurrency }}
+{% if result.ThisYTD > result.LastYTD %}<i class="text-success fa fa-caret-square-up"></i>{% else %}<i class="text-danger fa fa-caret-square-down"></i>{% endif %}</div>
+{%- person dataview:'18' where:'Id == {{personid}}' -%}
+    {%- if personItems != empty -%}
+        <div class='badge' style="padding: 10px;color: black;background-color: #efefef;"><i class="fas fa-globe-americas" style="color: green;"></i> Global Gospel </div>
+    {%- endif -%}
+{%- endperson -%}

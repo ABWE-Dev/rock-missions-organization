@@ -1,0 +1,146 @@
+<style>
+    table[id$=gReport] tr td:nth-child(2), table[id$=gReport] tr td:nth-child(3)
+    ,table[id$=gReport] tr th:nth-child(2), table[id$=gReport] tr th:nth-child(3)
+    ,table[id$=gReport] tr td:nth-child(4), table[id$=gReport] tr th:nth-child(4)
+    ,table[id$=gReport] tr td:nth-child(6), table[id$=gReport] tr th:nth-child(6)
+    ,table[id$=gReport] tr td:nth-child(5), table[id$=gReport] tr th:nth-child(5) {
+        display: none;
+    }
+
+    #map {
+        width: 100%;
+        height: 500px;
+    }
+
+    .RestrictToFilters .row {
+        margin-right: 15px;
+    }
+
+    .abwe-place-picker {
+        display: inline-block;
+    }
+
+    .abwe-place-picker+.number-box {
+        display: inline-block;
+    }
+</style>
+
+<script>
+    function initMap() {
+
+
+        let people = document.querySelectorAll('table[id$=gReport] tbody tr');
+
+        if (people.length > 0 && people[0].textContent.trim() != "No Results") {
+            $('<div id="map"></div>').insertAfter('div[id$=pnlFilter]');
+
+            // Init lat and longitude zoom options
+            var latlngbounds = new google.maps.LatLngBounds();
+            const infowindow = new google.maps.InfoWindow();
+
+            const map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 4
+            });
+
+
+            function getPopupContent(row) {
+                let wrapper = $('<div></div>')
+                let link = $('<a></a>');
+                link.on('click', function() { window.scrollTo({ top: $(row).offset().top-80, behavior: 'auto' }); });
+                link.append('<i class="fa fa-chevron-double-down fa-lg" style="margin-right: 10px;"></i>');
+                wrapper.append(link);
+                let checkbox;
+
+                if (row.childNodes[1].querySelector('input').checked == true)
+                {
+                    checkbox = $('<i class="far fa-check-square fa-lg" style="margin-right: 10px;"></i>');
+                } else {
+                    checkbox = $('<i class="far fa-square fa-lg" style="margin-right: 10px;"></i>');
+                }
+                checkbox.on('click', function () {
+                    row.childNodes[1].querySelector('input').click();
+                    if (row.childNodes[1].querySelector('input').checked == true) {
+                        $(this).attr('class', 'far fa-check-square fa-lg');
+                    } else {
+                        $(this).attr('class', 'far fa-square fa-lg');
+                    }
+                });
+                wrapper.append(checkbox);
+
+                wrapper.append(`<b style="font-size: 1.2em;">${row.childNodes[7].childNodes[1].outerHTML}</b>`);
+                wrapper.append(`<div style="margin-top: 10px;">${row.childNodes[8].innerHTML}</div>`);
+
+                return wrapper[0];
+            }
+
+            function markerClicked(marker) {
+                infowindow.setContent(getPopupContent(marker.rowEl));
+                infowindow.open(map, marker);
+            }
+
+            for (let person of people) {
+                // If there's no home but a work, it's a church/business. Otherwise, use connection status.
+                const connectionStatus = person.childNodes[6].textContent;
+                const personType = person.childNodes[2].textContent.trim() == "" && person.childNodes[4].textContent.trim() != "" && connectionStatus != "Missionary" ? "Church" : connectionStatus;
+
+                // Get lat and lon. Prefer home address, but use work otherwise.
+                const lat = parseFloat(person.childNodes[2].textContent) || parseFloat(person.childNodes[4].textContent);
+                const lng = parseFloat(person.childNodes[3].textContent) || parseFloat(person.childNodes[5].textContent);
+
+                const iconUrl = personType == "Church" ? 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png' : connectionStatus == "Missionary" ? 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png' : 'http://maps.google.com/mapfiles/ms/icons/red-dot.png';
+
+                if (lat && lng) {
+                    const latLng = { lat: lat, lng: lng };
+                    let marker = new google.maps.Marker({
+                        position: latLng,
+                        map,
+                        icon: iconUrl,
+                        title: person.childNodes[7].textContent,
+                        rowEl: person
+                    });
+                    marker.addListener("click", () => {
+                        markerClicked(marker);
+                    });
+                    // Add info window
+                    latlngbounds.extend(marker.position);
+
+                    let markerEl = $('<img src="'+iconUrl+'" style="margin-right: 10px;">');
+                    markerEl.on('click', function() {
+                        window.scrollTo({ top: $('#map').offset().top-80, behavior: 'auto' });
+                        map.setCenter(marker.position);
+                        markerClicked(marker);
+                    });
+                    $(person.childNodes[7]).prepend(markerEl);
+                }
+            }
+
+            //Center map and adjust Zoom based on the position of all markers.
+            map.setCenter({lat: latlngbounds.getCenter().lat(), lng: latlngbounds.getCenter().lng()})
+
+            google.maps.event.addListenerOnce(map, 'idle', function() {
+                map.fitBounds(latlngbounds);
+            });
+        }
+
+    }
+
+    // Select the node that will be observed for mutations
+    const targetNode = document.querySelector('form');
+
+    // Options for the observer (which mutations to observe)
+    const config = { attributes: false, childList: true, subtree: false };
+
+    // Callback function to execute when mutations are observed
+    let debounceTimer;
+    const callback = function(mutationsList, observer) {
+        if (debounceTimer) clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(initMap, 500);
+        console.log('change');
+    };
+
+    // Create an observer instance linked to the callback function
+    const observer = new MutationObserver(callback);
+
+    // Start observing the target node for configured mutations
+    observer.observe(targetNode, config);
+</script>

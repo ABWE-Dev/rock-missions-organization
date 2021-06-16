@@ -426,7 +426,15 @@ namespace RockWeb.Plugins.org_abwe.RockMissions
         /// <param name="e">The <see cref="Rock.Web.UI.Controls.RowEventArgs"/> instance containing the event data.</param>
         protected void gContactList_EditSelected(object sender, Rock.Web.UI.Controls.RowEventArgs e)
         {
-            var groupMember = new GroupMemberService(new RockContext()).Get(e.RowKeyId);
+            var churchGroupType = GroupTypeCache.Get(org.abwe.RockMissions.SystemGuid.GroupType.GROUPTYPE_CHURCH.AsGuid());
+            var churchRole = churchGroupType.Roles.FirstOrDefault(r => r.Guid.Equals(org.abwe.RockMissions.SystemGuid.GroupTypeRole.GROUPROLE_CHURCH.AsGuid()));
+            int churchId = int.Parse(hfChurchId.Value);
+
+            var groupMember = new GroupMemberService(new RockContext()).Queryable()
+                .Where(m =>
+                    m.PersonId == e.RowKeyId &&
+                    m.Group.Members.Any(o =>o.PersonId == churchId && o.GroupRole.Id == churchRole.Id))
+                .FirstOrDefault();
             ppContact.SetValue(groupMember.Person);
             ddlRole.SetValue(groupMember.GroupRole);
             hfModalOpen.Value = "Yes";

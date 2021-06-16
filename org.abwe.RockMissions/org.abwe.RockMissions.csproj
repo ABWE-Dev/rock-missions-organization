@@ -93,6 +93,7 @@
     <Compile Include="Migrations\017_Interactions.cs" />
     <Compile Include="Migrations\016_ChurchPages.cs" />
     <Compile Include="Migrations\020_CommunicationRisk.cs" />
+    <Compile Include="Migrations\026_ChurchDetailPage2.cs" />
     <Compile Include="Reporting\DataTransform\SendingChurchTransform.cs" />
     <Compile Include="SystemGuid\InteractionComponent.cs" />
     <Compile Include="SystemGuid\Group.cs" />

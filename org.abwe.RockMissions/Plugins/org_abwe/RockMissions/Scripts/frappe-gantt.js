@@ -1392,11 +1392,11 @@ class Gantt {
                 });
 
                 // remove out-of-bound dates
-                if (
-                    $upper_text.getBBox().x2 > this.layers.grid.getBBox().width
-                ) {
-                    $upper_text.remove();
-                }
+                //if (
+                //    $upper_text.getBBox().x2 > this.layers.grid.getBBox().width
+                //) {
+                //    $upper_text.remove();
+                //}
             }
         }
     }

@@ -239,7 +239,7 @@ function() {
                     groupMemberServiceQry = groupMemberServiceQry
                         .Where(xx =>
                            xx.Group.GroupLocations.Any(l =>
-                              l.GroupLocationTypeValue.Id == groupLocationTypeHomeId || (xx.Person.RecordTypeValueId == businessTypeId && l.GroupLocationTypeValue.Id == groupLocationTypeWorkId)
+                              (l.GroupLocationTypeValue.Id == groupLocationTypeHomeId || (xx.Person.RecordTypeValueId == businessTypeId && l.GroupLocationTypeValue.Id == groupLocationTypeWorkId))
                               && l.IsMappedLocation
                               && location.GeoPoint.Buffer(meters).Intersects(l.Location.GeoPoint)
                                ));

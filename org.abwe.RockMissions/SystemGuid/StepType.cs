@@ -17,6 +17,7 @@ namespace org.abwe.RockMissions.SystemGuid
 
         public const string STEP_TYPE_PERSONAL_DEVELOPMENT_BOOK = "3036b703-b8fb-4f6f-9ec0-302b5b0f6c67";
         public const string STEP_TYPE_PERSONAL_DEVELOPMENT_COURSE = "7d10fe63-8df4-454c-92ca-b745708192b6";
+        public const string STEP_TYPE_PERSONAL_DEVELOPMENT_LANGUAGE_SCHOOL = "c286d2fb-41bf-4de6-870e-affaf4bb3b01";
 
         public const string STEP_TYPE_TRAVEL_FURLOUGH = "ae81b102-7c6a-4c1a-a747-85a56a7887ef";
         public const string STEP_TYPE_TRAVEL_LEAVE_OF_ABSENCE = "084b76bb-2881-41dc-abeb-5eaff7ed551d";

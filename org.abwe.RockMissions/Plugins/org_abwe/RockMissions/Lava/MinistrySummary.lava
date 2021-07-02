@@ -59,7 +59,7 @@
                         {% assign backgroundClass = '' %}
                     {% endif %}
 
-                    <div class="{{backgroundClass}}" style="background-color: #efefef; background-color: {{communicationRisk | Attribute:'ColorLevel'}}; border-radius: 15px;padding: 15px 20px; margin-bottom: 15px; display: flex;align-items: center;margin-right: 25px;">
+                    <a class="{{backgroundClass}}" href="/Person/{{person.Id}}/Team/{{field.Group.Id}}" style="display: block; background-color: #efefef; background-color: {{communicationRisk | Attribute:'ColorLevel'}}; border-radius: 15px;padding: 15px 20px; margin-bottom: 15px; display: flex;align-items: center;margin-right: 25px;">
                         <div style="padding-right: 10px;">
                             {% if livesIn != "" and livesIn.Description == teamCountry.Description %}
                                 {% assign livesInCovered = true %}
@@ -73,7 +73,7 @@
                             <div style="font-size: .75em;">{{ field.GroupRole.Name }}</div>
                             <div style="font-size: .65em;">Since {{ field.CreatedDateTime | Date:'yyyy' }}</div>
                         </div>
-                    </div>
+                    </a>
                 {% endfor %}
             {% endfor %}
 

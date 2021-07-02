@@ -93,7 +93,12 @@
     <Compile Include="Migrations\017_Interactions.cs" />
     <Compile Include="Migrations\016_ChurchPages.cs" />
     <Compile Include="Migrations\020_CommunicationRisk.cs" />
+    <Compile Include="Migrations\030_ChurchRedirect.cs" />
+    <Compile Include="Migrations\029_StepsGrids.cs" />
+    <Compile Include="Migrations\028_TripPlanning.cs" />
+    <Compile Include="Migrations\027_DonorMetrics.cs" />
     <Compile Include="Migrations\026_ChurchDetailPage2.cs" />
+    <Compile Include="Migrations\ABWEMigrationHelper.cs" />
     <Compile Include="Reporting\DataTransform\SendingChurchTransform.cs" />
     <Compile Include="SystemGuid\InteractionComponent.cs" />
     <Compile Include="SystemGuid\Group.cs" />

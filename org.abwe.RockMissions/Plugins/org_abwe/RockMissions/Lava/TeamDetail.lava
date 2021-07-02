@@ -1,0 +1,243 @@
+﻿<style>
+    header.header {
+        position: relative;
+        padding: 10px 15px;
+        margin: 0 -15px;
+        border-top: 1px solid #e6e6e6;
+        border-bottom: 1px solid #e6e6e6;
+        margin-bottom: 25px;
+    }
+
+    header.header h1 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 600;
+        line-height: 25px;
+    }
+
+    #teamContainer .row a {
+        color: black;
+    }
+</style>
+
+<div id="teamContainer" class="container-fluid">
+
+
+	{% assign countActive = -1 %}
+	{% assign countInactive = -1 %}
+	{% assign countPending = -1 %}
+	{% for member in Group.Members %}
+		{% case member.GroupMemberStatus %}
+			{% when 'Active' %}
+				{% assign countActive = countActive | Plus: 1 %}
+			{% when 'Inactive' %}
+				{% assign countInactive = countInactive | Plus: 1 %}
+			{% when 'Pending' %}
+				{% assign countPending = countPending | Plus: 1 %}
+			{% else %}
+		{% endcase %}
+	{% endfor %}
+
+    {% assign parent = Group %}
+    {% assign hierarchy = "" %}
+
+    {% for i in (0..10) %}
+        {% assign parent = parent.ParentGroup.Id | GroupById %}
+        {% if parent == null %}{% break %}{% endif %}
+        {% if parent.Name == "Teams" %}{% continue %} {% endif %}
+
+        {% if hierarchy != "" %}
+            {% assign hierarchy = hierarchy | Prepend:' > ' %}
+        {% endif %}
+
+        {% unless parent.GroupType.Name == "Department"%}
+            {% capture openingTag %}<a href="{{parent.Id}}">{% endcapture %}
+            {% assign hierarchy = hierarchy | Prepend:'</a>' | Prepend:parent.Name | Prepend:openingTag %}
+        {% else %}
+            {% capture openingTag %}<a class="label label-campus" href="{{ parent.Groups | Where:'Name','Teams' | Select:'Id' }}">{% endcapture %}
+            {%  assign hierarchy = hierarchy | Prepend:'</a>' | Prepend:parent.Name | Prepend:openingTag %}
+        {% endunless %}
+    {% endfor %}
+
+    <!-- Breadcrumbs -->
+    <div class="breadcrumbs">
+    {{ hierarchy }}
+    </div>
+
+
+    <div class="row" style="display: flex; justify-content:flex-start; align-items: center; margin: 25px 0px;">
+        <h1 style="margin-left: 0px;">{{ Group.Name }}</h1>
+    </div>
+
+    {% assign members = Group.Members | GroupBy:'GroupRole.IsLeader' %}
+
+
+	<div class="row">
+
+        <div class="pull-right margin-b-md">
+        {% if LinkedPages.CommunicationPage != null %}
+            {% if AllowedActions.Edit == true or AllowedActions.ManageMembers == true %}
+                <a href="#" onclick="{{ '' | Postback:'SendCommunication' }}" class="btn btn-default btn-xs">
+                    <i class="fa fa-envelope-o"></i> Email Team
+                </a>
+            {% endif %}
+        {% endif %}
+        </div>
+
+        {% assign teamCountry = Group | Attribute:'Country','Object' %}
+        {% if teamCountry != empty %}
+
+            {% assign communicationRisk = teamCountry | Attribute:'CommunicationRisk','Object' %}
+            {% assign crOverride = team | Attribute:'CommunicationRiskOverride','Object' %}
+
+            {% if crOverride != "" %}
+                {% assign communicationRisk = crOverride %}
+            {% endif %}
+
+            {% if communicationRisk != "" and communicationRisk != 'Unknown' and communicationRisk.Description != 'Unknown' %}
+                {% assign backgroundClass = 'text-white' %}
+            {% else %}
+                {% assign backgroundClass = '' %}
+            {% endif %}
+
+            <div class="col-md-12">
+                <div class="{{backgroundClass}}" style="display: block; background-color: #efefef; background-color: {{communicationRisk | Attribute:'ColorLevel'}}; border-radius: 15px;padding: 5px 10px; margin-bottom: 15px; display: inline-flex;align-items: center;margin-right: 25px;">
+                    <div style="padding-right: 10px;">
+                        <i class="far fa-globe-americas"></i>
+                    </div>
+                    <div style="line-height: .8em;">
+                        <div style="line-height: 1em;"><b>{{ teamCountry.Description }}</b></div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    {% assign leadersCount = members['True'] | Size %}
+
+    {% if leadersCount > 0 %}
+
+    <div class="row">
+		<div class="col-md-12" style="margin: 25px 0px;padding-bottom: 25px;">
+        <header class="header">
+            <h1>Leadership</h1>
+        </header>
+            <div class="row">
+            {% for member in members['True'] %}
+                    <div class="col-sm-6 margin-b-md rollover-container" style="overflow: hidden;">
+                        {% if LinkedPages.PersonDetailPage %}
+                            <a href="/Person/{{ member.PersonId }}">
+                        {% endif %}
+                        <img src="{{ member.Person.PhotoUrl }}&height=60&width=60&mode=crop&scale=both" height="60" class="pull-left margin-r-sm img-circle" alt="">
+                        <div class="pull-left">
+                            <strong>{{ member.Person.FullName }}</strong>
+                            <small>({{ member.GroupRole.Name }})</small>
+
+                            <br />
+                            <a href="mailto:{{ member.Person.Email }}">{{ member.Person.Email }}</a>
+                        </div>
+
+                        {% if AllowedActions.Edit == true or AllowedActions.ManageMembers == true %}
+                        <div class="pull-left rollover-item" style="position: absolute; right:0; top:0;">
+                            <a href="#" onclick="{{ member.Id | Postback:'EditGroupMember' }}" class="margin-l-sm">
+                            <i class="fa fa-pencil"></i>
+                            </a>
+                        </div>
+                        {% endif %}
+
+                        {% if LinkedPages.PersonDetailPage %}
+                            </a>
+                        {% endif %}
+                    </div>
+            {% endfor %}
+            </div>
+		</div>
+	</div>
+
+    {% endif %}
+
+    <div class="row">
+        <div class="col-xs-12">
+        {% assign children = Group.Groups | GroupBy:'GroupType.Name' %}
+
+        {% if children != empty %}
+            {% for child in children %}
+                {% assign parts = child | PropertyToKeyValue %}
+                <header class="header"><h1>{{ parts.Key | Pluralize }}</h1></header>
+
+                <div style="display: flex; flex-wrap: wrap; align-items: center; width: 100%;">
+                {% for team in parts.Value %}
+                    {% assign teamCountry = team | Attribute:'Country','Object' %}
+                    {% assign communicationRisk = teamCountry | Attribute:'CommunicationRisk','Object' %}
+                    {% assign crOverride = team | Attribute:'CommunicationRiskOverride','Object' %}
+
+                    {% if crOverride != "" %}
+                        {% assign communicationRisk = crOverride %}
+                    {% endif %}
+
+                    {% if communicationRisk != "" and communicationRisk != 'Unknown' and communicationRisk.Description != 'Unknown' %}
+                        {% assign backgroundClass = 'text-white' %}
+                    {% else %}
+                        {% assign backgroundClass = '' %}
+                    {% endif %}
+
+                    <a class="{{backgroundClass}}" href="{{team.Id}}" style="display: block; background-color: #efefef; background-color: {{communicationRisk | Attribute:'ColorLevel'}}; border-radius: 15px;padding: 15px 20px; margin-bottom: 15px; display: flex;align-items: center;margin-right: 25px;">
+                        <div style="line-height: .8em;">
+                            <div style="line-height: 1em;"><b>{{ team.Name }}</b></div>
+                        </div>
+                    </a>
+                {% endfor %}
+                </div>
+            {% endfor %}
+
+        {% endif %}
+        </div>
+    </div>
+
+    {% assign membersCount = members['False'] | Size %}
+
+    {% if membersCount > 0 %}
+
+    <header class="header">
+        <h1>Members</h1>
+    </header>
+
+    <div class="row">
+    {% for member in members['False'] %}
+
+        {% if member.GroupMemberStatus == 'Active' %}
+
+            <div class="col-sm-6 margin-b-md rollover-container" style="overflow: hidden;">
+                {% if LinkedPages.PersonDetailPage %}
+                    <a href="/Person/{{ member.PersonId }}">
+                {% endif %}
+                <img src="{{ member.Person.PhotoUrl }}&height=60&width=60&mode=crop&scale=both" height="60" class="pull-left margin-r-sm img-circle" alt="">
+                <div class="pull-left">
+                    <strong>{{ member.Person.FullName }}</strong>
+                    <small>({{ member.GroupRole.Name }})</small>
+
+                    <br />
+                    <a href="mailto:{{ member.Person.Email }}">{{ member.Person.Email }}</a>
+                </div>
+
+                {% if AllowedActions.Edit == true or AllowedActions.ManageMembers == true %}
+                <div class="pull-left rollover-item" style="position: absolute; right:0; top:0;">
+                    <a href="#" onclick="{{ member.Id | Postback:'EditGroupMember' }}" class="margin-l-sm">
+                    <i class="fa fa-pencil"></i>
+                    </a>
+                </div>
+                {% endif %}
+
+                {% if LinkedPages.PersonDetailPage %}
+                    </a>
+                {% endif %}
+            </div>
+
+        {% endif %}
+
+    {% endfor %}
+    </div>
+
+    {% endif %}
+
+</div>
